@@ -22,10 +22,14 @@ class Revisao extends AbstractModel implements HasMedia
     use InteractsWithMedia;
     use LogsAllActivity;
 
-    protected $table = 'revisoes';
+    protected static ?string $modelLabel        = 'Revisão';
+    protected static ?string $pluralModelLabel  = 'Revisões';
+
+
+    protected $table = 'entrega_revisoes';
 
     protected $fillable = [
-        'entregas_id',
+        'entrega_id',
         'veiculo_liberado',
         'data_da_inspecao',
         'numero_da_ordem_de_servico',
@@ -63,7 +67,10 @@ class Revisao extends AbstractModel implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('preview');
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
     }
 
     public function getActivitylogOptions(): LogOptions
@@ -74,6 +81,6 @@ class Revisao extends AbstractModel implements HasMedia
 
     public function entrega(): BelongsTo
     {
-        return $this->belongsTo(Entrega::class, 'entregas_id', 'id');
+        return $this->belongsTo(Entrega::class, 'entrega_id', 'id');
     }
 }

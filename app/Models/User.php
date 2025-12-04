@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserStatus;
 use Database\Factories\UserFactory;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
@@ -25,6 +28,8 @@ class User extends Authenticatable  implements FilamentUser, HasAvatar, HasMedia
     use InteractsWithMedia;
     use HasRoles;
 
+    protected static ?string $modelLabel        = 'Usuário';
+    protected static ?string $pluralModelLabel  = 'Usuários';
 
     /**
      * The attributes that are mass assignable.
@@ -43,10 +48,6 @@ class User extends Authenticatable  implements FilamentUser, HasAvatar, HasMedia
         'created_by',
         'updated_by',
         'deleted_by',
-
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     /**
@@ -59,18 +60,14 @@ class User extends Authenticatable  implements FilamentUser, HasAvatar, HasMedia
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+
+    protected $casts = [
+        'status'            => UserStatus::class,
+        'email_verified_at' => 'datetime',
+        'password'          => 'hashed',
+        'created_at'        => 'datetime',
+        'updated_at'        => 'datetime',
+    ];
 
     protected static function booted(): void
     {
@@ -87,12 +84,21 @@ class User extends Authenticatable  implements FilamentUser, HasAvatar, HasMedia
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->status == 'Ativo';
+        return true;
     }
 
     public function empresas(): BelongsToMany
     {
-        return $this->belongsToMany(Empresa::class, 'user_has_empresas', 'empresa_id', 'user_id');
+        return $this->belongsToMany(Empresa::class, 'user_empresas', 'user_id', 'empresa_id');
     }
 
+    public static function getModelLabel(): string
+    {
+        return self::$modelLabel;
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return self::$pluralModelLabel;
+    }
 }

@@ -23,7 +23,11 @@ class TermoDeEntrega extends AbstractModel implements HasMedia
     use InteractsWithMedia;
     use LogsAllActivity;
 
-    protected $table = 'termos_de_entrega';
+    protected static ?string $modelLabel        = 'Termo de entrega';
+    protected static ?string $pluralModelLabel  = 'Termos de entrega';
+
+
+    protected $table = 'entrega_termos_de_entrega';
 
     protected $fillable = [
 

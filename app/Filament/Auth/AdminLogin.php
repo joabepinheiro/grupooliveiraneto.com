@@ -6,6 +6,7 @@ use Filament\Auth\Pages\Login;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Validation\ValidationException;
 
 class AdminLogin extends Login
 {
@@ -36,5 +37,12 @@ class AdminLogin extends Login
             $username_column => $data['username'],
             'password' => $data['password'],
         ];
+    }
+
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.username' => __('filament-panels::auth/pages/login.messages.failed'),
+        ]);
     }
 }

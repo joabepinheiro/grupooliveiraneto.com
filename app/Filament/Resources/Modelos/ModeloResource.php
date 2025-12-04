@@ -22,9 +22,11 @@ class ModeloResource extends Resource
 {
     protected static ?string $model = Modelo::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|null|BackedEnum $navigationIcon = 'fas-car-side';
 
-    protected static ?string $recordTitleAttribute = 'nome';
+    protected static ?int $navigationSort = 30;
+
+    protected static string|null|\UnitEnum $navigationGroup = 'Configurações';
 
     public static function form(Schema $schema): Schema
     {

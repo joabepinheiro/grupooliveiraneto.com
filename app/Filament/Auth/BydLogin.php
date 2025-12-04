@@ -6,6 +6,7 @@ use Filament\Auth\Pages\Login;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Validation\ValidationException;
 
 class BydLogin extends Login
 {
@@ -37,4 +38,12 @@ class BydLogin extends Login
             'password' => $data['password'],
         ];
     }
+
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.username' => __('filament-panels::auth/pages/login.messages.failed'),
+        ]);
+    }
+
 }

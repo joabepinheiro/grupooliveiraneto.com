@@ -1,123 +1,3 @@
-:root, :host {
-    /**
-    --spacing: .21rem;
-    --text-sm: .845rem;
-
-     */
-}
-
-/** grupooliveiraneto */
-
-.page-login.fi-panel-grupooliveiraneto {
-    background: #011C40;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-logo {
-    height: 3.2rem !important;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-fo-text-input{
-    background-color: #151515;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-ac-btn-action{
-    height: 50px !important;
-}
-
-.page-login.fi-panel-grupooliveiraneto input.fi-input{
-    background-color: #ddd;
-    color: #000;
-    box-shadow: none !important;
-    height: 45px !important;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-input-wrp-suffix{
-    background-color: #151515;
-    border-color: #0e0e0e;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-input-wrp-content-ctn,
-.page-login.fi-panel-grupooliveiraneto .fi-input,
-.page-login.fi-panel-grupooliveiraneto .fi-fo-field-content-col,
-.page-login.fi-panel-grupooliveiraneto .fi-fo-text-input,
-.page-login.fi-panel-grupooliveiraneto .fi-input-wrp{
-    box-shadow: none !important;
-    --tw-shadow: 0 0 #0000;
-    --tw-ring-shadow: 0 0 #0000;
-    --tw-ring-color: #0000;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-simple-main{
-    background-color: #f5f5f5;
-}
-
-.page-login.fi-panel-grupooliveiraneto .fi-simple-header-heading,
-.page-login.fi-panel-grupooliveiraneto .fi-fo-field .fi-fo-field-label-content{
-    color: #000;
-}
-/** / grupooliveiraneto */
-
-/** movelveiculos */
-
-.page-login.fi-panel-movelveiculos {
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-        url("/images/movelveiculos/slide1.webp");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.page-login.fi-panel-movelveiculos .fi-logo {
-    height: 3.5rem !important;
-}
-
-.page-login.fi-panel-movelveiculos .fi-fo-text-input{
-    background-color: #151515;
-}
-
-.page-login.fi-panel-movelveiculos .fi-ac-btn-action{
-    height: 50px !important;
-}
-
-.page-login.fi-panel-movelveiculos input.fi-input{
-    background-color: #dddddd;
-    color: #000;
-    box-shadow: none !important;
-    height: 45px !important;
-}
-
-.page-login.fi-panel-movelveiculos .fi-input-wrp-suffix{
-    background-color: #151515;
-    border-color: #0e0e0e;
-}
-
-.page-login.fi-panel-movelveiculos .fi-input-wrp-content-ctn,
-.page-login.fi-panel-movelveiculos .fi-input,
-.page-login.fi-panel-movelveiculos .fi-fo-field-content-col,
-.page-login.fi-panel-movelveiculos .fi-fo-text-input,
-.page-login.fi-panel-movelveiculos .fi-input-wrp{
-    box-shadow: none !important;
-    --tw-shadow: 0 0 #0000;
-    --tw-ring-shadow: 0 0 #0000;
-    --tw-ring-color: #0000;
-}
-
-.page-login.fi-panel-movelveiculos .fi-simple-main{
-    background-color: #f2f2f2;
-}
-
-.page-login.fi-panel-movelveiculos .fi-simple-header-heading,
-.page-login.fi-panel-movelveiculos .fi-fo-field .fi-fo-field-label-content{
-    color: #000;
-}
-/** / movelveiculos */
-
-/** bydconquista */
-
 .page-login.fi-panel-bydconquista {
     background:
         linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
@@ -131,9 +11,10 @@
     height: 2.5rem !important;
 }
 
-.page-login.fi-panel-bydconquista .fi-fo-text-input{
-    background-color: #151515;
+.fi-sidebar-header.bg-white, .fi-topbar.bg-white {
+    background: #252728 !important;
 }
+
 
 .page-login.fi-panel-bydconquista .fi-ac-btn-action{
     height: 50px !important;
@@ -170,136 +51,66 @@
 .page-login.fi-panel-bydconquista .fi-fo-field .fi-fo-field-label-content{
     color: #fff;
 }
-/** / bydconquista */
 
+.fi:not(.dark) {
 
+    .fi-topbar{
+        background-color: #000;
+    }
 
-.fi-topbar{
-   background-color: var(--gray-100);
+    .fi-sidebar-item-btn>.fi-icon {
+        color: var(--gray-700);
+    }
+
+    .fi-topbar-database-notifications-btn{
+        color: var(--gray-100);
+    }
+
+    @media (hover: hover) {
+        .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover {
+            background-color: #000;
+        }
+
+        .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover .fi-icon,
+        .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover .fi-sidebar-item-label {
+            color: var(--gray-200);
+            font-weight: var(--font-weight-medium);
+        }
+    }
+
+    .fi-sidebar .fi-dropdown-trigger{
+        background-color:  var(--gray-100);
+    }
+
+    .fi-sidebar{
+        background-color:  var(--gray-200);
+    }
+
+    .fi-sidebar-item.fi-active>.fi-sidebar-item-btn {
+        background-color: #000;
+    }
+
+    .fi-sidebar-item.fi-active>.fi-sidebar-item-btn>.fi-sidebar-item-label {
+        color: var(--gray-200);
+        font-weight: var(--font-weight-medium);
+    }
+
+    .fi-sidebar-item.fi-active>.fi-sidebar-item-btn>.fi-icon{
+        color: var(--gray-200);
+    }
+
+    .fi-sidebar-item-label{
+        color: var(--gray-900);
+        font-weight: var(--font-weight-normal);
+    }
+
+    .fi-sidebar-item-btn>.fi-icon {
+        color: var(--gray-900);
+    }
+
+    .fi-page-sub-navigation-sidebar .fi-sidebar-item-label,
+    .fi-page-sub-navigation-sidebar .fi-icon{
+        color: var(--gray-900);
+    }
 }
 
-.fi-sidebar-item-btn>.fi-icon {
-   color: var(--gray-700);
-}
-
-.fi-topbar-database-notifications-btn{
-   color: var(--gray-100);
-}
-
-.fi-fo-rich-editor-content{
-   min-height: 150px;
-}
-
-
-
-
-.fi-badge.fi-color-warning{
-   background: #F6C000 !important;
-   color: #222222 !important;
-   font-weight: 600;
-}
-
-.fi-badge.fi-color-success{
-   background: #17C653 !important;
-   color: #fff !important;
-   font-weight: bold;
-}
-
-.fi-badge.fi-color-danger{
-   background: #F8285A !important;
-   color: #fff !important;
-   font-weight: bold;
-}
-
-.fi-badge.fi-color-info{
-   background: #1B84FF !important;
-   color: #fff !important;
-   font-weight: 600;
-}
-
-.fi-badge.fi-color-orange{
-   background: #ff8306 !important;
-   color: #fff !important;
-   font-weight: 600;
-}
-
-.fi-badge.fi-color-green{
-   background: #17C653 !important;
-   color: #fff !important;
-   font-weight: 500;
-}
-
-@media (hover: hover) {
-   .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover {
-       background-color: #001e50;
-   }
-
-   .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover .fi-icon,
-   .fi-sidebar-item.fi-sidebar-item-has-url>.fi-sidebar-item-btn:hover .fi-sidebar-item-label {
-       color: var(--gray-200);
-       font-weight: var(--font-weight-medium);
-   }
-}
-
-.fi-sidebar .fi-dropdown-trigger{
-   background-color:  var(--gray-100);
-}
-
-.fi-sidebar{
-   background-color:  var(--gray-200);
-}
-
-.fi-sidebar-item.fi-active>.fi-sidebar-item-btn {
-   background-color: #001e50;
-}
-
-.fi-sidebar-item.fi-active>.fi-sidebar-item-btn>.fi-sidebar-item-label {
-   color: var(--gray-200);
-   font-weight: var(--font-weight-medium);
-}
-
-.fi-sidebar-item.fi-active>.fi-sidebar-item-btn>.fi-icon{
-   color: var(--gray-200);
-}
-
-.fi-sidebar-item-label{
-   color: var(--gray-900);
-   font-weight: var(--font-weight-normal);
-}
-
-.fi-sidebar-item-btn>.fi-icon {
-   color: var(--gray-900);
-}
-
-.fi-page-sub-navigation-sidebar .fi-sidebar-item-label,
-.fi-page-sub-navigation-sidebar .fi-icon{
-   color: var(--gray-900);
-}
-
-
-.fi-input-wrp {
-   --tw-ring-color: color-mix(in oklab, var(--gray-950) 20%, transparent);
-}
-
-.fi-section:not(.fi-section-not-contained):not(.fi-aside) {
-   --tw-ring-color:
-       color-mix(in oklab, var(--gray-950) 20%, transparent);
-}
-
-.fi-section:not(.fi-section-not-contained):not(.fi-aside).fi-section-has-header:not(.fi-collapsed)>.fi-section-content-ctn {
-   border-color: var(--gray-300);
-}
-
-.fi-section>.fi-section-header{
-   background: var(--gray-100);
-   border-top-right-radius: 14px;
-   border-top-left-radius: 14px;
-}
-
-
-.fi-badge.fi-size-sm {
-   min-width: 1.25rem;
-   padding-block: calc(var(--spacing) * 1.2);
-   --tw-tracking: var(--tracking-tight);
-   letter-spacing: var(--tracking-tight);
-}

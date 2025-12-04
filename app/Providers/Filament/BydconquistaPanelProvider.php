@@ -4,7 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\AdminLogin;
 use App\Filament\Auth\BydLogin;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -18,6 +18,7 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -27,6 +28,11 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class BydconquistaPanelProvider extends PanelProvider
 {
+    public function canAccessPanel(Authenticatable $user): bool
+    {
+        return $user->empresas->contains('id', 3);
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -36,11 +42,12 @@ class BydconquistaPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->maxContentWidth(Width::Full)
             ->sidebarCollapsibleOnDesktop()
-            ->sidebarWidth('17rem')
+            ->sidebarWidth('19rem')
             ->brandLogoHeight('2rem')
             ->brandLogo(asset('images/byd/logo-vitoria-da-conquista.png'))
             ->sidebarCollapsibleOnDesktop(true)
             ->favicon(asset('images/byd/favicon.ico'))
+            ->viteTheme('resources/css/filament/bydconquista/theme.css')
             ->assets([
                 Css::make('bydconquista', __DIR__ . '/../../../resources/css/bydconquista.css'),
             ])
@@ -50,19 +57,41 @@ class BydconquistaPanelProvider extends PanelProvider
                     ->url('/grupooliveiraneto')
                     ->icon('fas-sitemap')
                     ->group('Mudar para')
-                    ->sort(10000000),
+                    ->visible(function (){
 
-                NavigationItem::make('BYD Conquista')
-                    ->url('/bydconquista')
-                    ->icon('fas-sitemap')
-                    ->group('Mudar para')
+                        return true;
+                        //return auth()->user()->empresas->contains('id', 1);
+                    })
                     ->sort(10000000),
 
                 NavigationItem::make('Movel Veículos')
                     ->url('/movelveiculos')
                     ->icon('fas-sitemap')
                     ->group('Mudar para')
-                    ->sort(10000000),
+                    ->visible(function (){
+                        return true;
+                        //return auth()->user()->empresas->contains('id', 2);
+                    })
+                    ->sort(10000001),
+
+                NavigationItem::make('BYD Conquista')
+                    ->url('/bydconquista')
+                    ->icon('fas-sitemap')
+                    ->group('Mudar para')
+                    ->visible(function (){
+                        return true;
+                        //return auth()->user()->empresas->contains('id', 3) && Filament::getCurrentPanel()->getId() != 'bydconquista';
+                    })
+                    ->sort(10000002),
+
+                NavigationItem::make('Administrador')
+                    ->url('/admin')
+                    ->icon('fas-sitemap')
+                    ->group('Mudar para')
+                    ->visible(function (){
+                        //return auth()->user()->hasRole('super_admin');
+                    })
+                    ->sort(10000003),
             ])
 
             ->id('bydconquista')
@@ -92,9 +121,7 @@ class BydconquistaPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make()
-                    ->navigationIcon('fas-user-shield')
-                    ->navigationGroup('Configurações'),
+
             ])
             ->authMiddleware([
                 Authenticate::class,

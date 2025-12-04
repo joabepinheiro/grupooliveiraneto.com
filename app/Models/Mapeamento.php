@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * Mapeamento das ids para migração de dados dos bancos de dados antigos para o novo banco de dados
+ *
  * @property int|null $id_antigo
  * @property int|null $id_novo
  * @property string $table_origem
@@ -19,6 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Mapeamento extends Model
 {
     protected $table = 'mapeamentos';
+
+    protected static ?string $modelLabel        = 'Mapeamento';
+    protected static ?string $pluralModelLabel  = 'Mapeamentos';
 
     protected $fillable = [
         'id_novo',
@@ -80,5 +85,15 @@ class Mapeamento extends Model
             ->where('id_novo', '=', $id_novo)
             ->where('bd_origem', '=', $bd_origem)
             ->first()->id_antigo ?? NULL;
+    }
+
+    public static function getModelLabel(): string
+    {
+        return self::$modelLabel;
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return self::$pluralModelLabel;
     }
 }

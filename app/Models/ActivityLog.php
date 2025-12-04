@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ActivityLog extends Model
 {
+
+    protected static ?string $modelLabel        = 'Log';
+    protected static ?string $pluralModelLabel  = 'Logs';
+
     /**
      * Nome da tabela associado ao modelo.
      */
@@ -56,5 +60,15 @@ class ActivityLog extends Model
     public function causer(): MorphTo
     {
         return $this->morphTo('causer');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return self::$modelLabel;
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return self::$pluralModelLabel;
     }
 }

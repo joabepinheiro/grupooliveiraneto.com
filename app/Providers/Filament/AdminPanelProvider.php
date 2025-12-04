@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\AdminLogin;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -44,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/grupooliveiraneto/logo-grupo-oliveira-neto.png'))
             ->sidebarCollapsibleOnDesktop(true)
             ->favicon(asset('images/grupooliveiraneto/favicon.png'))
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
                 Css::make('admin', __DIR__ . '/../../../resources/css/admin.css'),
             ])
@@ -70,19 +70,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->colors([
-                'primary' => [
-                    50  => 'oklch(0.97 0.02 259)',  // quase branco
-                    100 => 'oklch(0.92 0.04 259)',
-                    200 => 'oklch(0.82 0.07 259)',
-                    300 => 'oklch(0.70 0.10 259)',
-                    400 => 'oklch(0.55 0.13 259)',
-                    500 => 'oklch(0.28 0.15 259)',  // cor base (≈ #001e50)
-                    600 => 'oklch(0.26 0.14 259)',
-                    700 => 'oklch(0.24 0.12 259)',
-                    800 => 'oklch(0.22 0.10 259)',
-                    900 => 'oklch(0.16 0.08 259)',
-                    950 => 'oklch(0.10 0.06 259)',  // quase preto
-                ],
+                'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -106,9 +94,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make()
-                    ->navigationIcon('fas-user-shield')
-                    ->navigationGroup('Configurações'),
+
             ])
             ->authMiddleware([
                 Authenticate::class,

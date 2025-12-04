@@ -9,22 +9,24 @@ use App\Filament\Bydconquista\Resources\Entregas\Pages\ViewEntrega;
 use App\Filament\Bydconquista\Resources\Entregas\Schemas\EntregaForm;
 use App\Filament\Bydconquista\Resources\Entregas\Schemas\EntregaInfolist;
 use App\Filament\Bydconquista\Resources\Entregas\Tables\EntregasTable;
-use App\Models\Entrega;
+use App\Models\Entrega\Entrega;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EntregaResource extends Resource
 {
-    protected static ?string $model = Entrega\Entrega::class;
+    protected static ?string $model = Entrega::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|null|BackedEnum $navigationIcon = 'fas-box';
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?int $navigationSort = 10;
+
 
     public static function form(Schema $schema): Schema
     {

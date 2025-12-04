@@ -25,6 +25,10 @@ class SolicitacaoDeEntrega extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
+    protected static ?string $modelLabel        = 'Solicitação de entrega';
+    protected static ?string $pluralModelLabel  = 'Solicitações de entrega';
+
+
     protected $table = 'solicitacoes_de_entrega';
 
     protected $fillable = [

@@ -21,10 +21,14 @@ class Acessorio extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
-    protected $table = 'acessorios';
+    protected static ?string $modelLabel        = 'Acessório';
+    protected static ?string $pluralModelLabel  = 'Acessórios';
+
+
+    protected $table = 'entrega_acessorios';
 
     protected $fillable = [
-        'entregas_id',
+        'entrega_id',
         'descricao',
         'instalado',
 

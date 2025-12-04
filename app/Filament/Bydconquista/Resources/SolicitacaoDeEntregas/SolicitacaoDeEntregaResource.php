@@ -9,6 +9,7 @@ use App\Filament\Bydconquista\Resources\SolicitacaoDeEntregas\Pages\ViewSolicita
 use App\Filament\Bydconquista\Resources\SolicitacaoDeEntregas\Schemas\SolicitacaoDeEntregaForm;
 use App\Filament\Bydconquista\Resources\SolicitacaoDeEntregas\Schemas\SolicitacaoDeEntregaInfolist;
 use App\Filament\Bydconquista\Resources\SolicitacaoDeEntregas\Tables\SolicitacaoDeEntregasTable;
+use App\Models\Empresa;
 use App\Models\Entrega\SolicitacaoDeEntrega;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -22,9 +23,14 @@ class SolicitacaoDeEntregaResource extends Resource
 {
     protected static ?string $model = SolicitacaoDeEntrega::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'fas-share-from-square';
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $modelLabel = 'Solicitação de entrega';
+
+    protected static ?string $pluralModelLabel = 'Solicitações de entrega';
+
+    protected static ?string $navigationLabel = 'Solicitações de entrega';
+
 
     public static function form(Schema $schema): Schema
     {
@@ -64,5 +70,17 @@ class SolicitacaoDeEntregaResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', '=', 'Solicitada')
+            ->where('empresa_id', '=', Empresa::BYD_CONQUISTA_ID)
+            ->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
     }
 }

@@ -7,7 +7,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "bezhansalleh/filament-shield": "^4.0",
         "cmixin/business-day": "^1.20",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
@@ -17,10 +16,13 @@
         "owenvoke/blade-fontawesome": "^2.9",
         "saade/filament-autograph": "^4.0",
         "saade/filament-fullcalendar": "^v4.0.0-beta2",
-        "spatie/laravel-activitylog": "^4.10"
+        "simshaun/recurr": "^5.0",
+        "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-permission": "^6.23"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^1.8",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",

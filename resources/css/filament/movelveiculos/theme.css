@@ -1,0 +1,5 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Movelveiculos/**/*';
+@source '../../../../resources/views/filament/movelveiculos/**/*';
+@source '../../../../resources/views/**/*';

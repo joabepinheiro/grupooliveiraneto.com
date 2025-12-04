@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModeloStatus;
 use App\Traits\LogsAllActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,11 +17,16 @@ class Modelo extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
+    protected static ?string $modelLabel        = 'Modelo';
+    protected static ?string $pluralModelLabel  = 'Modelos';
+
     protected $table = 'modelos';
 
     protected $fillable = [
         'nome',
         'status',
+        'cores',
+        'empresa_id',
 
         'created_by',
         'updated_by',
@@ -32,6 +38,7 @@ class Modelo extends AbstractModel
     ];
 
     protected $casts = [
+        'status'      => ModeloStatus::class,
         'cores'      => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -43,8 +50,8 @@ class Modelo extends AbstractModel
         'updated_at',
     ];
 
-    public function cores(): HasMany
+    public function empresa(): BelongsTo
     {
-        return $this->hasMany(Cor::class, 'modelos_id');
+        return $this->belongsTo(Empresa::class, 'empresa_id');
     }
 }

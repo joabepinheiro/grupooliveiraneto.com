@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -60,6 +61,7 @@ class UserSeeder extends Seeder
                 'status'   => 'Ativo',
             ]
         );
+
     }
 
     public function importarDadosDaMovelVeiculos(): void

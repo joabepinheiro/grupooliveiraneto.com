@@ -18,6 +18,9 @@ class Nota extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
+    protected static ?string $modelLabel        = 'Nota';
+    protected static ?string $pluralModelLabel  = 'Notas';
+
     protected $table = 'notas';
 
     public static string $prefixId = 'NOT-';

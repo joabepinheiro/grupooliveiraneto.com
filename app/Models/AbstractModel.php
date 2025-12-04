@@ -17,6 +17,10 @@ abstract class AbstractModel extends Model
 
     public $timestamps = true;
 
+    protected static ?string $modelLabel = '';
+
+    protected static ?string $pluralModelLabel = '';
+
     protected $fillable = [
         'created_by',
         'updated_by',
@@ -72,12 +76,10 @@ abstract class AbstractModel extends Model
         });
     }
 
-    /**
-     * Retorna o usuário que criou o registro.
-     */
-    public function createdBy(): BelongsTo
+
+    public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
 
     /**
@@ -99,5 +101,15 @@ abstract class AbstractModel extends Model
     public function logs(): MorphMany
     {
         return $this->morphMany(ActivityLog::class, 'subject');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return static::$modelLabel;
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return static::$pluralModelLabel;
     }
 }

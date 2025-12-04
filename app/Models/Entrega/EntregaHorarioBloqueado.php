@@ -23,7 +23,11 @@ class EntregaHorarioBloqueado extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
-    protected $table = 'entregas_horarios_bloqueados';
+    protected static ?string $modelLabel        = 'Horário Bloqueado';
+    protected static ?string $pluralModelLabel  = 'Horários bloqueados';
+
+
+    protected $table = 'entrega_horarios_bloqueados';
 
     protected $fillable = [
         'start',

@@ -9,12 +9,17 @@ use Illuminate\Support\Facades\Schema;
 
 class ResetDatabase extends Command
 {
-    protected $signature = 'reset-database';
+    protected $signature = 'rd';
 
     protected $description = 'Exclui todas as tabelas, executa as migrações e popula o banco de dados';
 
     public function handle()
     {
+        if (!app()->environment(['local', 'development'])) {
+            $this->error('⚠️ Este comando NÃO pode ser executado fora do ambiente de desenvolvimento.');
+            return Command::FAILURE;
+        }
+
         $this->info('Iniciando reset do banco de dados...');
 
         // Executa as migrações

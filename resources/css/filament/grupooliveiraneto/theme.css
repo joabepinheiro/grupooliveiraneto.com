@@ -1,0 +1,7 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source "../../../../app/Filament/Grupooliveiraneto/**/*.php";
+@source "../../../../resources/views/filament/grupooliveiraneto/**/*.blade.php";
+
+/* Opcional: outras views */
+@source "../../../../resources/views/**/*.blade.php";

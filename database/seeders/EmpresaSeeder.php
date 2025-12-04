@@ -17,10 +17,10 @@ class EmpresaSeeder extends Seeder
     public function run(): void
     {
         $empresas = [
-            ['id' => 1, 'nome' => 'Grupo Oliveira Neto', 'nome_curto' => 'GON'],
-            ['id' => 2, 'nome' => 'Movel Veículos', 'nome_curto' => 'MV'],
-            ['id' => 3, 'nome' => 'BYD Conquista', 'nome_curto' => 'BYD'],
-            ['id' => 4, 'nome' => 'Movel Caminhões', 'nome_curto' => 'MC'],
+            ['id' => 1, 'nome' => 'Grupo Oliveira Neto', 'nome_curto' => 'GON' , 'panel_id' => 'grupooliveiraneto'],
+            ['id' => 2, 'nome' => 'Movel Veículos', 'nome_curto' => 'MV', 'panel_id' => 'movelveiculos'],
+            ['id' => 3, 'nome' => 'BYD Conquista', 'nome_curto' => 'BYD', 'panel_id' => 'bydconquista'],
+            //['id' => 4, 'nome' => 'Movel Caminhões', 'nome_curto' => 'MC', 'panel' => ''],
         ];
 
         foreach ($empresas as $empresa) {

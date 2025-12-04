@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('empresa_id')->nullable();
 
             $table->unsignedBigInteger('entrega_id')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->nullable()->default('Solicitada');
 
             $table->string('tipo_venda')->nullable();
             $table->dateTime('data_prevista')->nullable();
@@ -30,11 +30,18 @@ return new class extends Migration
             $table->string('chassi')->nullable();
 
             $table->boolean('foi_solicitado_emplacamento')
-                ->default(0);
+                ->default(0)
+                ->nullable();
+
             $table->boolean('foi_solicitado_acessorio')
-                ->default(0);
-            $table->json('acessorios_solicitados')->nullable(); // Laravel casta como array
-            $table->string('brinde')->nullable();
+                ->default(0)
+                ->nullable();
+
+            $table->json('acessorios_solicitados')
+                ->nullable(); // Laravel casta como array
+
+            $table->string('brinde')
+                ->nullable();
 
 
             $table->unsignedBigInteger('created_by')->nullable();

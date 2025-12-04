@@ -9,7 +9,9 @@ use App\Filament\Movelveiculos\Resources\SolicitacaoDeEntregas\Pages\ViewSolicit
 use App\Filament\Movelveiculos\Resources\SolicitacaoDeEntregas\Schemas\SolicitacaoDeEntregaForm;
 use App\Filament\Movelveiculos\Resources\SolicitacaoDeEntregas\Schemas\SolicitacaoDeEntregaInfolist;
 use App\Filament\Movelveiculos\Resources\SolicitacaoDeEntregas\Tables\SolicitacaoDeEntregasTable;
-use App\Models\SolicitacaoDeEntrega;
+use App\Models\Empresa;
+use App\Models\Entrega\SolicitacaoDeEntrega;
+use App\Traits\HasResourcePermissions;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -20,20 +22,27 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SolicitacaoDeEntregaResource extends Resource
 {
+    use HasResourcePermissions;
+
     protected static ?string $model = SolicitacaoDeEntrega::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'fas-share-from-square';
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $modelLabel = 'Solicitação de entrega';
+
+    protected static ?string $pluralModelLabel = 'Solicitações de entrega';
+
+    protected static ?string $navigationLabel = 'Solicitações de entrega';
+
 
     public static function form(Schema $schema): Schema
     {
-        return SolicitacaoDeEntregaForm::configure($schema);
+        return SolicitacaoDeEntregaForm::configure($schema)->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return SolicitacaoDeEntregaInfolist::configure($schema);
+        return SolicitacaoDeEntregaInfolist::configure($schema)->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -65,4 +74,17 @@ class SolicitacaoDeEntregaResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('status', '=', 'Solicitada')
+            ->where('empresa_id', '=', Empresa::MOVEL_VEICULOS_ID)
+            ->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
+
 }

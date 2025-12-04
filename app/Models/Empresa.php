@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\LogsAllActivity;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Empresa extends AbstractModel
@@ -11,9 +12,13 @@ class Empresa extends AbstractModel
     use SoftDeletes;
     use LogsAllActivity;
 
+    protected static ?string $modelLabel        = 'Empresa';
+    protected static ?string $pluralModelLabel  = 'Empresas';
+
     protected $fillable = [
         'id',
         'nome',
+        'panel_id',
 
         'created_by',
         'updated_by',
@@ -23,6 +28,11 @@ class Empresa extends AbstractModel
         'updated_at',
         'deleted_at',
     ];
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 
     const MOVEL_GRUPO_OLIVEIRA_NETO_ID = 1;
     const MOVEL_VEICULOS_ID = 2;

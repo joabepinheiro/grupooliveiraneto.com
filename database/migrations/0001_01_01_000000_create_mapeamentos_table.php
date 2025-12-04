@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('mapeamentos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('id_novo')->nullable();
-            $table->string('id_antigo')->nullable();
+            $table->unsignedBigInteger('id_novo')->nullable();
+            $table->unsignedBigInteger('id_antigo')->nullable();
 
             $table->string('table_origem')->nullable();
             $table->string('table_destino')->nullable();

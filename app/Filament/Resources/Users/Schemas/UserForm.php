@@ -32,6 +32,7 @@ class UserForm
                                     ->placeholder('Enviar foto')
                                     ->imageEditor()
                                     ->alignCenter()
+                                    ->disk('local')
                                     ->columnSpanFull(),
                             ]),
 
@@ -119,10 +120,10 @@ class UserForm
 
                         Select::make('empresas')
                             ->multiple()
+                            ->required()
                             ->preload()
                             ->relationship(name: 'empresas', titleAttribute: 'nome')
                             ->label('Empresas')
-                            ->prefixIcon('fas-id-card')
                             ->searchable()
                             ->live()
                             ->columnSpanFull(),

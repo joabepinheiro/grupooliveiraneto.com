@@ -49,7 +49,7 @@ class ActivityLogInfolist
                             ]),
 
                         TextEntry::make('created_at')
-                            ->label('Cadastrado em')
+                            ->label('Alteração feita em')
                             ->date('d/m/Y H:i:s')
                             ->placeholder('Não informado')
                             ->columnSpan([

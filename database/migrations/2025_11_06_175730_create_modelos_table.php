@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('modelos', function (Blueprint $table) {
             $table->id();
             $table->string('nome')->nullable();
+            $table->text('cores')->nullable();
             $table->string('status')->default('Ativo');
+            $table->unsignedBigInteger('empresa_id');
             $table->rememberToken();
 
             $table->unsignedBigInteger('created_by')->nullable();
