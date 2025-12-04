@@ -33,7 +33,7 @@ class RecorrenciaService
             'data_inicio'  => $tarefa->data_inicio,
             'data_fim'     => $tarefa->data_fim,
             'status'       => $tarefa->status,
-            'responsaveis' => implode($tarefa->responsaveis) ?? [],
+            'responsaveis' => implode($tarefa->responsaveis ?? []),
             'is_excecao'   => false,
 
             'created_by'   => $tarefa->created_by,
@@ -83,7 +83,7 @@ class RecorrenciaService
                 'data_inicio'  => $inicio,
                 'data_fim'     => (clone $inicio)->add($duracao),
                 'status'       => $tarefa->status,
-                'responsaveis' => implode($tarefa->responsaveis) ?? [],
+                'responsaveis' => implode($tarefa->responsaveis ?? []),
                 'is_excecao'   => false,
                 'created_at'   => $agora,
                 'updated_at'   => null,
