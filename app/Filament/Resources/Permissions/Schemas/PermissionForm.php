@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Permissions\Schemas;
 
+use App\Models\Role;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -37,6 +38,7 @@ class PermissionForm
                         Select::make('panel_id')
                             ->label('Painel')
                             ->required()
+                            ->live()
                             ->options(function (){
                                 return [
                                     'admin'             => 'Administração',
@@ -125,6 +127,21 @@ class PermissionForm
                             ])
                             ->columnSpan([
                                 'lg' => 6
+                            ]),
+
+
+                        Select::make('roles')
+                            ->relationship(
+                                name: 'roles',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query, Get $get) => $query->where('panel_id', $get('panel_id')),
+                            )
+                            ->multiple()
+                            ->label('Funções')
+                            ->required()
+                            ->preload()
+                            ->columnSpan([
+                                'lg' => 12
                             ]),
 
 

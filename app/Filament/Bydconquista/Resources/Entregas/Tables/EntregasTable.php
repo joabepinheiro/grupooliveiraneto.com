@@ -6,7 +6,10 @@ use App\Enums\EntregaStatus;
 use App\Models\Empresa;
 use App\Models\Modelo;
 use App\Models\User;
+use Carbon\Carbon;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -18,6 +21,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -31,17 +35,50 @@ class EntregasTable
     {
         return $table
             ->columns([
-                TextColumn::make('proposta')
-                    ->label('Proposta')
-                    ->placeholder('Não informado')
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->html()
                     ->color(fn ($state)=> EntregaStatus::from($state)->getColor())
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('proposta')
+                    ->label('Entrega')
+                    ->placeholder('Não informado')
+                    ->sortable()
+                    ->view('filament.tables.columns.entrega.entrega')
+                    ->searchable(),
+
+                TextColumn::make('modelo')
+                    ->label('Modelo')
+                    ->forceSearchCaseInsensitive()
+                    ->placeholder('Não informada')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->view('filament.tables.columns.entrega.modelo')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('data_prevista')
+                    ->label(new HtmlString('Data prevista<br/>para entrega'))
+                    ->html()
+                    ->formatStateUsing(function ($state){
+                        $data =  Carbon::make($state);
+                        return $data->format('H:i') . '<br/>'.$data->format('d/m/Y') . '<br/>' . $data->translatedFormat('l');
+                    })
+                    ->placeholder('Não informada')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('entrega_efetivada_em')
+                    ->label(new HtmlString('Entrega<br/>efetivada em'))
+                    ->placeholder('Não informada')
+                    ->html()
+                    ->formatStateUsing(function ($state){
+                        $data =  Carbon::make($state);
+                        return $data->format('H:i') . '<br/>'.$data->format('d/m/Y') . '<br/>' . $data->translatedFormat('l');
+                    })
                     ->sortable()
                     ->searchable(),
 
@@ -62,64 +99,6 @@ class EntregasTable
                     ->sortable()
                     ->searchable(),
 
-
-                TextColumn::make('data_prevista')
-                    ->label('Data prevista para entrega')
-                    ->date('d/m/y H:i')
-                    ->wrap()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('entrega_efetivada_em')
-                    ->label('Entrega efetivada em')
-                    ->placeholder('Não informada')
-                    ->date('d/m/y H:i')
-                    ->wrap()
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('cliente')
-                    ->label('Cliente')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('vendedor.name')
-                    ->label('Vendedor')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('modelo')
-                    ->label('Modelo')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('chassi')
-                    ->label('Chassi')
-                    ->placeholder('Não informado')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('cor')
-                    ->label('Cor')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable()
-                    ->searchable(),
 
                 TextColumn::make('pesquisa_com_7_dias_finalizada')
                     ->label(new HtmlString('Pesquisa<br/>7 dias'))
@@ -280,10 +259,14 @@ class EntregasTable
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->where('empresa_id', '=', Empresa::MOVEL_VEICULOS_ID);
             })
+            ->defaultSort('entrega_efetivada_em', 'desc')
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+                ActionGroup::make([
+                    ViewAction::make()->modalWidth('full'),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

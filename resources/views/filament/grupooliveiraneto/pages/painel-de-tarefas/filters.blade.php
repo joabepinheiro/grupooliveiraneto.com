@@ -1,0 +1,3 @@
+<div>
+    {{ $this->filtersForm }}
+</div>

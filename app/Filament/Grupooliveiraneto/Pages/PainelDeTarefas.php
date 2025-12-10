@@ -7,9 +7,12 @@ use App\Filament\Grupooliveiraneto\Resources\Tarefas\Schemas\TarefaForm;
 use App\Models\Tarefa\Ocorrencia;
 use App\Models\Tarefa\Tarefa;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -24,19 +27,25 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 // Adicionado o HasFiltersForm ao use
-class Board extends Page implements HasForms
+class PainelDeTarefas extends Page implements HasForms
 {
     use InteractsWithForms;
     use HasFiltersForm; // 1. Adiciona o trait para habilitar o formulário de filtros
 
-    protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static string|null|\BackedEnum $navigationIcon = 'fab-trello';
 
-    protected string $view = 'filament.grupooliveiraneto.pages.board';
+    protected string $view = 'filament.grupooliveiraneto.pages.painel-de-tarefas';
 
-    protected static ?string $navigationLabel = 'Board';
-    protected static ?string $title = 'Board de Tarefas';
+    protected static ?string $navigationLabel = 'Painel de tarefas';
+    protected static ?string $title = 'Painel de tarefas';
+
+    protected static ?string $slug = 'painel-de-tarefas';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Tarefas';
+
 
     /** Modelo sendo editado */
     public ?Ocorrencia $ocorrencia = null;
@@ -47,16 +56,13 @@ class Board extends Page implements HasForms
     // As propriedades dos filtros são armazenadas na propriedade pública $filters,
     // que é injetada pelo HasFiltersForm.
 
-
-
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->modalHeading('')
+                ->modalHeading('Criar tarefa')
                 ->schema(TarefaForm::components())
                 ->using(function (array $data): Tarefa {
-                    $data['rrule'] = TarefaForm::formatarRrule($data);
                     return Tarefa::create($data);
                 })
         ];
@@ -65,6 +71,7 @@ class Board extends Page implements HasForms
     public function mount(): void
     {
 
+
         // Preenche o form state
         $this->form->fill([
             'descricao' => '',
@@ -72,6 +79,7 @@ class Board extends Page implements HasForms
 
         $this->filters = [
             'search_title' => '',
+            'filter_responsavel'    => null,
             'filter_data_fim_de'    => today()->addDay(-30),
             'filter_data_fim_ate'   => today()->addDays(30),
             'filter_mes'            => today()->format('m'),
@@ -149,12 +157,20 @@ class Board extends Page implements HasForms
                         ->label('Descrição')
                         ->columnSpanFull(),
 
+                    TextInput::make('id')
+                        ->label('ID')
+                        ->readOnly()
+                        ->disabled()
+                        ->columnSpan([
+                            'lg' => 4
+                        ]),
+
                     DateTimePicker::make('created_at')
                         ->label('Cadastrado em')
                         ->readOnly()
                         ->disabled()
                         ->columnSpan([
-                            'lg' => 6
+                            'lg' => 4
                         ]),
 
                     TextInput::make('created_by')
@@ -165,8 +181,10 @@ class Board extends Page implements HasForms
                             return User::find($state)->name ?? 'Não infomado';
                         })
                         ->columnSpan([
-                            'lg' => 6
+                            'lg' => 4
                         ]),
+
+
                 ])
                 ->columns(12),
         ];
@@ -176,24 +194,32 @@ class Board extends Page implements HasForms
     {
         return $schema->components([
 
-            Section::make('')
+            Section::make('Filtro de tarefas')
                 ->schema([
 
                     TextInput::make('search_id')
-                        ->label('Filtrar por ID')
+                        ->label('ID')
                         ->debounce(500)
+                        ->numeric()
                         ->columnSpan([
-                            'lg' => 2
+                            'lg' => 1
                         ]),
 
                     TextInput::make('search_title')
-                        ->label('Filtrar por título')
+                        ->label('Título')
                         ->placeholder('Ex: Reunião')
                         ->debounce(500)
                         ->columnSpan([
                             'lg' => 3
                         ]),
 
+                    Select::make('filter_responsavel')
+                        ->label('Responsável')
+                        ->options(User::pluck('name', 'id'))
+                        ->searchable()
+                        ->columnSpan([
+                            'lg' => 3
+                        ]),
 
                     FusedGroup::make([
                         DatePicker::make('filter_data_fim_de')
@@ -202,10 +228,10 @@ class Board extends Page implements HasForms
                         DatePicker::make('filter_data_fim_ate')
                             ->prefix('Até'),
                     ])
-                        ->label('Filtrar por Prazo')
+                        ->label('Prazo')
                         ->columns(2)
                         ->columnSpan([
-                            'lg' => 7
+                            'lg' => 5
                         ]),
                 ])
                 ->columnSpanFull()
@@ -228,6 +254,73 @@ class Board extends Page implements HasForms
         $this->dispatch('$refresh');
     }
 
+    public function deleteAction(): Action
+    {
+        return Action::make('delete')
+            ->label('Excluir')
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading('Excluir Ocorrência')
+            ->modalDescription('Como você deseja excluir esta ocorrência?')
+            ->schema(function () {
+                // Se não for recorrente, não mostra opções, apenas confirmação padrão
+                if (! $this->ocorrencia?->tarefa?->rrule) {
+                    return [];
+                }
+
+                return [
+                    Radio::make('scope')
+                        ->label('')
+                        ->options([
+                            'single'    => 'Esta ocorrência',
+                            'following' => 'Esta e as ocorrências seguintes',
+                            'all'       => 'Todas as ocorrências',
+                        ])
+                        ->default('single')
+                        ->required(),
+                ];
+            })
+            ->action(function (array $data) {
+                if (! $this->ocorrencia) {
+                    return;
+                }
+
+                $scope = $data['scope'] ?? 'single';
+
+                // Se não for recorrente, força exclusão única
+                if (! $this->ocorrencia->tarefa?->rrule) {
+                    $scope = 'single';
+                }
+
+                switch ($scope) {
+                    case 'single':
+                        // Exclui apenas esta ocorrência
+                        $this->ocorrencia->delete();
+                        break;
+
+                    case 'following':
+                        // Exclui esta e as futuras da mesma tarefa
+                        Ocorrencia::where('tarefa_id', $this->ocorrencia->tarefa_id)
+                            ->where('data_inicio', '>=', $this->ocorrencia->data_inicio)
+                            ->delete();
+                        break;
+
+                    case 'all':
+
+                        Ocorrencia::where('tarefa_id', $this->ocorrencia->tarefa_id)
+                            ->delete();
+
+                        Tarefa::where('id', $this->ocorrencia->tarefa_id)
+                            ->delete();
+
+                        break;
+                }
+
+                $this->dispatch('close-modal', id: 'editar-ocorrencia');
+                $this->dispatch('$refresh');
+            });
+    }
+
     /** Valores enviados para a view Blade */
     protected function getViewData(): array
     {
@@ -241,6 +334,11 @@ class Board extends Page implements HasForms
 
         if (!empty($this->filters['search_title'])) {
             $baseQuery->where('titulo', 'like', '%' . $this->filters['search_title'] . '%');
+        }
+
+        if (!empty($this->filters['filter_responsavel'])) {
+
+            $baseQuery->whereJsonContains('responsaveis', (int) $this->filters['filter_responsavel']);
         }
 
         if (!empty($this->filters['filter_data_fim_de'])) {

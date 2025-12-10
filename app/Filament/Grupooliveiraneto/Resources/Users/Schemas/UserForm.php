@@ -2,6 +2,7 @@
 
 namespace App\Filament\Grupooliveiraneto\Resources\Users\Schemas;
 
+use App\Models\Role;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -9,6 +10,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserForm
@@ -39,11 +42,14 @@ class UserForm
                                     ->required()
                                     ->columnSpanFull()
                                     ->label('Funções')
-                                    ->relationship(
-                                        'roles',
-                                        'name',
-                                    # modifyQueryUsing: fn (Builder $query) => $query->whereNot('name', '=', 'super_admin')
-                                    ),
+                                    ->options(
+                                        Role::query()
+                                        ->select([
+                                            DB::raw('CONCAT(name, " - ", panel_id) as name'),
+                                            'id'
+                                        ])
+                                        ->whereNot('name', '=', 'super_admin')
+                                        ->pluck('name', 'id')),
                             ])
                     ])
                     ->columnSpan([

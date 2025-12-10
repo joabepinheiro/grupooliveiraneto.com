@@ -26,6 +26,15 @@ return new class extends Migration
 
             $table->text('responsaveis')->nullable();
 
+            $table->boolean('recorrencia_tem')->nullable();
+            $table->integer('recorrencia_intervalo')->nullable();
+            $table->string('recorrencia_frequencia')->nullable();
+            $table->string('recorrencia_dias_semana', 255)->nullable();
+            $table->string('recorrencia_tipo_fim')->nullable();
+            $table->dateTime('recorrencia_data_fim')->nullable();
+            $table->integer('recorrencia_quantidade_ocorrencias')->nullable();
+
+
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
             $table->unsignedBigInteger('deleted_by')->nullable()->index();

@@ -4,11 +4,17 @@ namespace App\Models\Tarefa;
 
 use App\Models\AbstractModel;
 use App\Models\User;
+use App\Traits\LogsAllActivity;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ocorrencia extends AbstractModel
 {
+
+    use SoftDeletes;
+    use LogsAllActivity;
+
     protected $table = 'agenda_ocorrencias_tarefas';
 
     protected $fillable = [
@@ -50,42 +56,4 @@ class Ocorrencia extends AbstractModel
     {
         return $this->is_excecao === true;
     }
-
-    public function createdByFF()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
-    }
-
-    /**
-     * Retorna o usuário que atualizou o registro.
-     */
-    public function updatedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    /**
-     * Retorna o usuário que deletou o registro.
-     */
-    public function deletedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'deleted_by');
-    }
-
-    /**
-     *
-     *
-     *
-     * $ocorrencia->update([
-     * 'is_excecao' => true,
-     * 'dados_sobrescritos' => [
-     * 'descricao' => $novaDescricao,
-     * 'data_inicio' => $novoInicio,
-     * 'data_fim' => $novoFim,
-     * 'cor' => $novaCor,
-     * 'status' => $novoStatus,
-     * // qualquer outro campo sobrescrito
-     * ]
-     * ]);
-     */
 }

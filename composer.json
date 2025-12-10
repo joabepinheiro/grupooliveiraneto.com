@@ -15,7 +15,6 @@
         "laravel/tinker": "^2.10.1",
         "owenvoke/blade-fontawesome": "^2.9",
         "saade/filament-autograph": "^4.0",
-        "saade/filament-fullcalendar": "^v4.0.0-beta2",
         "simshaun/recurr": "^5.0",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.23"

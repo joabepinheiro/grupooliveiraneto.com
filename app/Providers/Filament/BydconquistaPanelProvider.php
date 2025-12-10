@@ -4,13 +4,14 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\AdminLogin;
 use App\Filament\Auth\BydLogin;
+use App\Filament\Bydconquista\Pages\AgendaEntregas;
+use App\Filament\Bydconquista\Pages\Dashboard;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationItem;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
@@ -44,9 +45,9 @@ class BydconquistaPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('19rem')
             ->brandLogoHeight('2rem')
-            ->brandLogo(asset('images/byd/logo-vitoria-da-conquista.png'))
+            ->brandLogo(asset('images/bydconquista/logo-vitoria-da-conquista.png'))
             ->sidebarCollapsibleOnDesktop(true)
-            ->favicon(asset('images/byd/favicon.ico'))
+            ->favicon(asset('images/bydconquista/favicon.ico'))
             ->viteTheme('resources/css/filament/bydconquista/theme.css')
             ->assets([
                 Css::make('bydconquista', __DIR__ . '/../../../resources/css/bydconquista.css'),
@@ -103,11 +104,11 @@ class BydconquistaPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Bydconquista/Pages'), for: 'App\Filament\Bydconquista\Pages')
             ->pages([
                 Dashboard::class,
+                AgendaEntregas::class
             ])
             ->discoverWidgets(in: app_path('Filament/Bydconquista/Widgets'), for: 'App\Filament\Bydconquista\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,

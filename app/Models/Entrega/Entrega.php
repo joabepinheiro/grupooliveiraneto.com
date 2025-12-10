@@ -64,6 +64,8 @@ class Entrega extends AbstractModel implements HasMedia
         'documentacao_documentacao_veiculo_com_placa',
         'documentacao_chave_reserva',
         'documentacao_manuais',
+        'documentacao_carregador',
+        'documentacao_kit_reparo_ou_step',
 
 
         //Preparação do veículo
@@ -78,6 +80,7 @@ class Entrega extends AbstractModel implements HasMedia
         //Serviços estéticos
         'servicos_adicionais_lavagem',
         'servicos_adicionais_combustivel',
+        'servicos_adicionais_recarga',
 
 
         //Financeiro
@@ -101,14 +104,23 @@ class Entrega extends AbstractModel implements HasMedia
         'aceita_ativacao_conectividade_carro_conectado',
         'cliente_se_recusou_a_receber_as_informacoes_contidas',
 
-
-        'byd_entrega_preparacao_exterior_revisao_de_entrega',
-        'byd_entrega_preparacao_exterior_elaboracao_do_comprovante_de_servico',
-        'byd_entrega_preparacao_exterior_pintura_sem_riscos_e_danos',
-        'byd_entrega_preparacao_interior_funcionamento_do_veiculo',
-        'byd_entrega_preparacao_interior_marcador',
-        'byd_entrega_preparacao_interior_central_multimidia',
-        'byd_entrega_preparacao_interior_verificacao_de_itens',
+        'byd_acessorios_higienizacao',
+        'byd_acessorios_polimento',
+        'byd_encantamento_e_instrucao_carro_no_showroom',
+        'byd_encantamento_e_instrucao_capa_e_laco',
+        'byd_encantamento_e_instrucao_brindes',
+        'byd_encantamento_e_instrucao_musica',
+        'byd_preparacao_exterior_revisao_de_entrega',
+        'byd_preparacao_exterior_elaboracao_do_comprovante_de_servico',
+        'byd_preparacao_exterior_pintura_sem_riscos_e_danos',
+        'byd_preparacao_interior_funcionamento_do_veiculo',
+        'byd_preparacao_interior_marcador',
+        'byd_preparacao_interior_central_multimidia',
+        'byd_preparacao_interior_verificacao_de_itens',
+        'byd_pesquisa_com_7_dias',
+        'byd_pesquisa_com_7_dias_finalizada',
+        'byd_pesquisa_com_30_dias',
+        'byd_pesquisa_com_30_dias_finalizada',
 
         'created_by',
         'updated_by',
@@ -135,6 +147,23 @@ class Entrega extends AbstractModel implements HasMedia
         'created_at',
         'updated_at',
     ];
+
+
+    public function podeHabilitarAutorizacaoDoFinanceiro(): bool
+    {
+        $atributos = [
+            $this->proposta,
+            $this->cliente,
+            $this->vendedor,
+            $this->modelo,
+            $this->cor,
+            $this->chassi
+        ];
+
+        // Retorna false se algum dos atributos for nulo; caso contrário, retorna true
+        return count(array_filter($atributos, fn($atributo) => empty($atributo))) === 0;
+    }
+
 
     public function registerMediaConversions(?Media $media = null): void
     {
@@ -168,6 +197,16 @@ class Entrega extends AbstractModel implements HasMedia
     public function acessorios(): HasMany
     {
         return $this->hasMany(Acessorio::class, 'entrega_id', 'id');
+    }
+
+    public function notas_da_pesquisa_com_7_dias(): MorphMany
+    {
+        return $this->morphMany(Nota::class, 'morphable')->where('grupo', '=', 'pesquisa_com_7_dias');
+    }
+
+    public function notas_da_pesquisa_com_30_dias(): MorphMany
+    {
+        return $this->morphMany(Nota::class, 'morphable')->where('grupo', '=', 'pesquisa_com_30_dias');
     }
 
     public function vendedor(): BelongsTo

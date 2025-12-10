@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 use App\Models\Entrega\Entrega;
 use App\Models\Permission;
@@ -14,11 +16,13 @@ Route::get('/', function () {
 });
 
 
+Route::get('movelveiculos/solicitacao-de-entrega', \App\Filament\Movelveiculos\Pages\SolicitacaoDeEntrega::class);
+Route::get('bydconquista/solicitacao-de-entrega', \App\Filament\Bydconquista\Pages\SolicitacaoDeEntrega::class);
+
+
 Route::get('/teste', function () {
 
-    $ocorrencia = \App\Models\Tarefa\Ocorrencia::query()->first();
-    dd($ocorrencia->createdBy);
-
+    dd(Str::slug('Entrega - Alterar a seção "Segundo veículo na troca" do formulário de entrega'));
 
 });
 

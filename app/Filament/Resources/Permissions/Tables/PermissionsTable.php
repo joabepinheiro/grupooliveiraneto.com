@@ -30,7 +30,6 @@ class PermissionsTable
         return $table
             ->columns([
 
-
                 TextColumn::make('descricao')
                     ->label('Descrição')
                     ->placeholder('Não informado')
@@ -48,6 +47,12 @@ class PermissionsTable
                     ->placeholder('Não informado')
                     ->sortable()
                     ->searchable(),
+
+                TextColumn::make('roles.name')
+                    ->label('Funções')
+                    ->listWithLineBreaks()
+                    ->bulleted()
+                    ->placeholder('Não informado'),
 
                 TextColumn::make('name')
                     ->label('Name')
@@ -100,6 +105,7 @@ class PermissionsTable
                         'Model'     => 'Model',
                         'widget'    => 'Widget',
                         'page'      => 'Page',
+                        'custom'    => 'Custom',
                     ] )
                     ->searchable()
                     ->columnSpan(6),

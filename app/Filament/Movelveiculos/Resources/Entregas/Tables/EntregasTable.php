@@ -7,6 +7,7 @@ use App\Models\Empresa;
 use App\Models\Entrega;
 use App\Models\Modelo;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -36,17 +37,52 @@ class EntregasTable
     {
         return $table
             ->columns([
-                TextColumn::make('proposta')
-                    ->label('Proposta')
-                    ->placeholder('Não informado')
-                    ->sortable()
-                    ->searchable(),
 
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->html()
                     ->color(fn ($state)=> EntregaStatus::from($state)->getColor())
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('proposta')
+                    ->label('Entrega')
+                    ->placeholder('Não informado')
+                    ->sortable()
+                    ->view('filament.tables.columns.entrega.entrega')
+                    ->searchable(),
+
+                TextColumn::make('modelo')
+                    ->label('Modelo')
+                    ->forceSearchCaseInsensitive()
+                    ->placeholder('Não informada')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->view('filament.tables.columns.entrega.modelo')
+                    ->sortable()
+                    ->searchable(),
+
+
+                TextColumn::make('data_prevista')
+                    ->label(new HtmlString('Data prevista<br/>para entrega'))
+                    ->html()
+                    ->formatStateUsing(function ($state){
+                        $data =  Carbon::make($state);
+                        return $data->format('H:i') . '<br/>'.$data->format('d/m/Y') . '<br/>' . $data->translatedFormat('l');
+                    })
+                    ->placeholder('Não informada')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('entrega_efetivada_em')
+                    ->label(new HtmlString('Entrega<br/>efetivada em'))
+                    ->placeholder('Não informada')
+                    ->html()
+                    ->formatStateUsing(function ($state){
+                        $data =  Carbon::make($state);
+                        return $data->format('H:i') . '<br/>'.$data->format('d/m/Y') . '<br/>' . $data->translatedFormat('l');
+                    })
                     ->sortable()
                     ->searchable(),
 
@@ -68,64 +104,8 @@ class EntregasTable
                     ->searchable(),
 
 
-                TextColumn::make('data_prevista')
-                    ->label(new HtmlString('Data prevista<br/>para entrega'))
-                    ->date('d/m/y H:i')
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('entrega_efetivada_em')
-                    ->label(new HtmlString('Entrega<br/>efetivada em'))
-                    ->placeholder('Não informada')
-                    ->date('d/m/y H:i')
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('cliente')
-                    ->label('Cliente')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('vendedor.name')
-                    ->label('Vendedor')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('modelo')
-                    ->label('Modelo')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('chassi')
-                    ->label('Chassi')
-                    ->placeholder('Não informado')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('cor')
-                    ->label('Cor')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('orientacao_csi_finalizada')
-                    ->label(new HtmlString('Orientação<br/>CSI'))
+                TextColumn::make('pesquisa_com_7_dias_finalizada')
+                    ->label(new HtmlString('Pesquisa<br/>7 dias'))
                     ->badge()
                     ->formatStateUsing(function ($state){
                         if($state == 1){
@@ -138,9 +118,9 @@ class EntregasTable
                         true, 1 => 'success',
                         default => 'danger',
                     })
-
                     ->sortable()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(function (){
                         if(auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')){
                             return true;
@@ -148,11 +128,11 @@ class EntregasTable
                         return false;
                     }),
 
-                TextColumn::make('orientacao_cem_finalizada')
-                    ->label(new HtmlString('Orientação<br/>CEM'))
+                TextColumn::make('pesquisa_com_30_dias_finalizada')
+                    ->label(new HtmlString('Pesquisa<br/>30 dias'))
                     ->badge()
                     ->formatStateUsing(function ($state){
-                        if($state === true){
+                        if($state == 1){
                             return 'Finalizada';
                         }else{
                             return 'Não finalizada';
@@ -164,19 +144,13 @@ class EntregasTable
                     })
                     ->sortable()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(function (){
                         if(auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')){
                             return true;
                         }
                         return false;
                     }),
-                TextColumn::make('created_at')
-                    ->label(new HtmlString('Cadastrado em'))
-                    ->placeholder('Não informada')
-                    ->date('d/m/y H:i')
-                    ->sortable()
-                    ->searchable(),
-
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

@@ -2,19 +2,34 @@
 
 namespace App\Filament\Grupooliveiraneto\Resources\Tarefas\Tables;
 
+use App\Enums\EntregaStatus;
+use App\Enums\TarefaStatus;
+use App\Models\Empresa;
+use App\Models\Modelo;
+use App\Models\User;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class TarefasTable
 {
@@ -22,6 +37,13 @@ class TarefasTable
     {
         return $table
             ->columns([
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn ($state)=> TarefaStatus::from($state)->getColor())
+                    ->sortable(),
+
                 TextColumn::make('titulo')
                     ->label('Título')
                     ->sortable()
@@ -43,32 +65,33 @@ class TarefasTable
                     ->sortable(),
 
                 // Mostrar se é recorrente
-                TextColumn::make('rrule')
+                TextColumn::make('recorrencia_tem')
                     ->label('Recorrência')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state ? 'Sim' : 'Não')
-                    ->colors([
-                        'primary' => fn ($state) => $state !== null,
-                    ]),
-
-
-
-                TextColumn::make('status')
-                    ->label('Status')
-                    ->badge()
-                    ->colors([
-                        'warning' => 'pendente',
-                        'info'    => 'andamento',
-                        'success' => 'concluida',
-                        'danger'  => 'cancelada',
-                    ])
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state) => $state ? 'Sim' : 'Não'),
 
                 // Contagem de ocorrências
                 TextColumn::make('ocorrencias_count')
                     ->label('Ocorrências')
                     ->counts('ocorrencias')
                     ->sortable(),
+
+
+                TextColumn::make('created_at')
+                    ->label('Cadastrado em')
+                    ->placeholder('Não informada')
+                    ->date('d/m/y H:i')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('deleted_at')
+                    ->label('Excluído em')
+                    ->placeholder('Não informada')
+                    ->date('d/m/y H:i')
+                    ->color('danger')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 TrashedFilter::make(),
@@ -81,17 +104,73 @@ class TarefasTable
 
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'pendente'   => 'Pendente',
-                        'andamento'  => 'Em andamento',
-                        'concluida'  => 'Concluída',
-                        'cancelada'  => 'Cancelada',
-                    ]),
+                    ->options(TarefaStatus::values()),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+                ActionGroup::make([
+                    ViewAction::make()
+                        ->modalWidth('full'),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
+            ], position: RecordActionsPosition::BeforeColumns)
+            ->filters([
+
+                Filter::make('titulo')
+                    ->schema([
+                        TextInput::make('titulo')
+                            ->label('Título')
+                            ->placeholder('Título'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if(!empty($data['titulo'])){
+                            return $query->whereLike('titulo','%'.$data['titulo'].'%');
+                        }
+                        return $query;
+
+                    })->columnSpan([
+                        'lg' => 3,
+                    ]),
+
+
+                Filter::make('status')
+                    ->schema([
+                        Select::make('status')
+                            ->label('Status')
+                            ->placeholder('Todos')
+                            ->prefixIcon(fn ($state) => TarefaStatus::tryFrom($state)?->getIcon())
+                            ->prefixIconColor(fn ($state) => TarefaStatus::tryFrom($state)?->getColor())
+                            ->options(TarefaStatus::values()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if(!empty($data['status'])){
+                            return $query->where('status','=',$data['status']);
+                        }
+                        return $query;
+
+                    })->columnSpan(3),
+
+                SelectFilter::make('recorrencia_tem')
+                    ->label('Tem recorrência')
+                    ->options([
+                        1 => 'Sim',
+                        0 => 'Não',
+                    ])
+                    ->columnSpan([
+                        'lg' => 3,
+                    ]),
+
+                TrashedFilter::make()
+                    ->columnSpan([
+                        'lg' => 3,
+                    ])
+
+
+
+            ], layout: FiltersLayout::AboveContent)
+                ->filtersFormColumns(12)
+                ->deferFilters(false)
+                ->searchable(false)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

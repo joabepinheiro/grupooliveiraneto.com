@@ -34,12 +34,12 @@ class SolicitacaoDeEntregaResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return SolicitacaoDeEntregaForm::configure($schema);
+        return SolicitacaoDeEntregaForm::configure($schema)->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return SolicitacaoDeEntregaInfolist::configure($schema);
+        return SolicitacaoDeEntregaInfolist::configure($schema)->columns(1);
     }
 
     public static function table(Table $table): Table

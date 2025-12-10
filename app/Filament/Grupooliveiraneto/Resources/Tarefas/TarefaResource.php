@@ -17,12 +17,19 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class TarefaResource extends Resource
 {
     protected static ?string $model = Tarefa\Tarefa::class;
 
     protected static string|BackedEnum|null $navigationIcon ='fas-list-check';
+
+    protected static ?string $navigationLabel   = 'Tarefas';
+    protected static ?string $modelLabel        = 'Tarefa';
+    protected static ?string $pluralModelLabel  = 'Tarefas';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Tarefas';
 
     public static function form(Schema $schema): Schema
     {

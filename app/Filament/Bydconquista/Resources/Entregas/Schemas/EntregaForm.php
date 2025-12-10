@@ -7,6 +7,7 @@ use App\Filament\Forms\Components\SignaturePad;
 use App\Models\Entrega;
 use App\Models\Entrega\EntregaHorarioBloqueado;
 use App\Models\Modelo;
+use App\Models\Permission;
 use App\Models\User;
 
 use Filament\Forms\Components\DateTimePicker;
@@ -125,13 +126,23 @@ class EntregaForm
 
                         Select::make('cor')
                             ->label('Cor')
-                            ->required()
-                            ->options(function (Get $get){
-                                return Cor::whereIn(
-                                    'modelos_id', Modelo::where('nome', $get('modelo'))->get()->pluck('id', 'id')
-                                )
-                                    ->get()
-                                    ->pluck('nome', 'nome');
+                            ->options(function (Get $get) {
+                                $modeloNome = $get('modelo');
+
+                                if (! $modeloNome) {
+                                    return [];
+                                }
+
+                                $modelo = Modelo::where('nome', $modeloNome)->first();
+
+                                if (! $modelo || empty($modelo->cores)) {
+                                    return [];
+                                }
+
+                                // Se cores for um array de strings
+                                return collect($modelo->cores)
+                                    ->mapWithKeys(fn ($cor) => [$cor => $cor])
+                                    ->toArray();
                             })
                             ->columnSpan([
                                 'lg' => 3
@@ -205,12 +216,7 @@ class EntregaForm
                             ->columnSpanFull(),
 
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Dados Gerais" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Financeiro')
@@ -218,12 +224,7 @@ class EntregaForm
 
                         TextInput::make('financeiro_forma_de_pagamento')
                             ->label('Forma de pagamento')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente financeiro')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Forma de pagamento" do formulário de entrega'))
                             ->columnSpan([
                                 'lg' => 12
                             ]),
@@ -238,12 +239,7 @@ class EntregaForm
                             ->openable()
                             ->columnSpanFull()
                             ->disk('local')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                                    return false;
-                                }
-                                return true;
-                            }),
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Comprovantes de pagamento" do formulário de entrega')),
 
                         Hidden::make('financeiro_autorizada_pelo_financeiro_por'),
 
@@ -314,12 +310,7 @@ class EntregaForm
                             ->minDistance(5)
                             ->velocityFilterWeight(0.7)
                             ->columnSpanFull()
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente financeiro')){
-                                    return false;
-                                }
-                                return true;
-                            }),
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Assinatura do gerente financeiro" do formulário de entrega')),
 
                     ])
                     ->columns(12),
@@ -334,12 +325,7 @@ class EntregaForm
                             ->label('Faturamento')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Faturamento" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Veículo na troca')
@@ -416,12 +402,7 @@ class EntregaForm
                                 'lg' => 12
                             ]),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Veículo na troca" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Documentação')
@@ -450,71 +431,55 @@ class EntregaForm
                             ->label('Kit reparo ou step')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
                     ->columns(12),
 
 
                 Section::make('Acessórios')
                     ->schema([
-                        Toggle::make('acessorios_higienizacao')
+                        Toggle::make('byd_acessorios_higienizacao')
                             ->label('Higienização')
                             ->columnSpanFull(),
 
-                        Toggle::make('acessorios_polimento')
+                        Toggle::make('byd_acessorios_polimento')
                             ->label('Polimento')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Acessórios" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Preparação do veículo (48 horas antes)')
                     ->schema([
-                        Toggle::make('preparacao_exterior_revisao_de_entrega')
+                        Toggle::make('byd_preparacao_exterior_revisao_de_entrega')
                             ->label('Revisão de entrega realizada')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_exterior_elaboracao_do_comprovante_de_servico')
+                        Toggle::make('byd_preparacao_exterior_elaboracao_do_comprovante_de_servico')
                             ->label('Elaboração de comprovante de serviço')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_exterior_pintura_sem_riscos_e_danos')
+                        Toggle::make('byd_preparacao_exterior_pintura_sem_riscos_e_danos')
                             ->label('Pintura, sem riscos e danos')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_interior_funcionamento_do_veiculo')
+                        Toggle::make('byd_preparacao_interior_funcionamento_do_veiculo')
                             ->label('Funcionamento do veículo')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_interior_marcador')
+                        Toggle::make('byd_preparacao_interior_marcador')
                             ->label('Marcador')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_interior_central_multimidia')
+                        Toggle::make('byd_preparacao_interior_central_multimidia')
                             ->label('Central multimídia')
                             ->columnSpanFull(),
 
-                        Toggle::make('preparacao_interior_verificacao_de_itens')
+                        Toggle::make('byd_preparacao_interior_verificacao_de_itens')
                             ->label('Verificação de itens soltos, conservação e limpeza')
                             ->columnSpanFull(),
 
 
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Preparação do veículo (48 horas antes)" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Serviços adicionais')
@@ -527,31 +492,26 @@ class EntregaForm
                             ->label('Recarga')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Serviços adicionais" do formulário de entrega'))
                     ->columns(12),
 
 
                 Section::make('Encantamento e instrução (12 horas antes)')
                     ->schema([
 
-                        Toggle::make('encantamento_e_instrucao_carro_no_showroom')
+                        Toggle::make('byd_encantamento_e_instrucao_carro_no_showroom')
                             ->label('Carro no showroom')
                             ->columnSpanFull(),
 
-                        Toggle::make('encantamento_e_instrucao_capa_e_laco')
+                        Toggle::make('byd_encantamento_e_instrucao_capa_e_laco')
                             ->label('Capa e laço')
                             ->columnSpanFull(),
 
-                        Toggle::make('encantamento_e_instrucao_brindes')
+                        Toggle::make('byd_encantamento_e_instrucao_brindes')
                             ->label('Brindes')
                             ->columnSpanFull(),
 
-                        Toggle::make('encantamento_e_instrucao_musica')
+                        Toggle::make('byd_encantamento_e_instrucao_musica')
                             ->label('Música')
                             ->columnSpanFull(),
 
@@ -565,12 +525,7 @@ class EntregaForm
                             ->disk('local')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Encantamento e instrução (12 horas antes)" do formulário de entrega'))
                     ->columns(12),
 
 
@@ -607,14 +562,14 @@ class EntregaForm
                             ->columnSpanFull()
                             ->columns(1),
 
-                        Toggle::make('pesquisa_com_7_dias_finalizada')
+                        Toggle::make('byd_pesquisa_com_7_dias_finalizada')
                             ->label('Pesquisa de 7 dias finalizada')
                             ->columnSpanFull(),
 
                     ])
-                    ->visible(function (){
-                        if(auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                            return true;
+                    ->visible(function ($record, $operation){
+                        if($operation == 'edit'){
+                            return Permission::can('Entrega - Visualisar a seção "Pesquisa efetuada após 7 dias da entrega" do formulário de entrega');
                         }
                         return false;
                     }),
@@ -635,9 +590,9 @@ class EntregaForm
                                     ->rows(8)
                                     ->columnSpanFull(),
 
-                                Placeholder::make('created_by')
+                                TextEntry::make('created_by')
                                     ->hiddenLabel(true)
-                                    ->content(function ($record) {
+                                    ->state(function ($record) {
                                         if(!empty($record)){
 
                                             return (new HtmlString('Por <span class="font-semibold">'.$record->createdby->name. '</span> em '. \Carbon\Carbon::parse($record->created_at)->format('d/m/Y H:i')));
@@ -651,19 +606,15 @@ class EntregaForm
                             ->columnSpanFull()
                             ->columns(1),
 
-                        Toggle::make('pesquisa_com_30_dias_finalizada')
+                        Toggle::make('byd_pesquisa_com_30_dias_finalizada')
                             ->label('Pesquisa de 30 dias finalizada')
                             ->columnSpanFull(),
 
                     ])
                     ->visible(function ($record, $operation){
-
                         if($operation == 'edit'){
-                            if((auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')) && $record->status == 'Finalizada'){
-                                return true;
-                            }
+                            return Permission::can('Entrega - Visualisar a seção "Pesquisa efetuada após 30 dias da entrega" do formulário de entrega');
                         }
-
                         return false;
                     }),
 

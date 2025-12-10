@@ -35,8 +35,8 @@ enum OcorrenciaStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string | array | null
     {
         return match ($this) {
-            self::PENDENTE          => 'danger',
-            self::EM_ANDAMENTO      => 'warning',
+            self::PENDENTE          => 'warning',
+            self::EM_ANDAMENTO      => 'info',
             self::CONCLUIDO         => 'success',
         };
     }

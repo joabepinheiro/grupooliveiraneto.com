@@ -45,7 +45,9 @@ class UserForm
                                     ->relationship(
                                         'roles',
                                         'name',
-                                    # modifyQueryUsing: fn (Builder $query) => $query->whereNot('name', '=', 'super_admin')
+                                        modifyQueryUsing: fn (Builder $query) =>
+                                        $query->whereNot('name', '=', 'super_admin')
+                                            ->where('panel_id', '=', 'bydconquista')
                                     ),
                             ])
                     ])

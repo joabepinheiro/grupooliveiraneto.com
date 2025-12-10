@@ -30,12 +30,12 @@ class EntregaResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return EntregaForm::configure($schema);
+        return EntregaForm::configure($schema)->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return EntregaInfolist::configure($schema);
+        return EntregaInfolist::configure($schema)->columns(1);
     }
 
     public static function table(Table $table): Table

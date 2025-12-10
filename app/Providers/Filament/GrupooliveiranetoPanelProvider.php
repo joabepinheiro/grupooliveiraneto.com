@@ -5,6 +5,8 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\AdminLogin;
 use App\Filament\Auth\GrupooliveiranetoLogin;
 use App\Filament\Grupooliveiraneto\Pages\Board;
+use App\Filament\Grupooliveiraneto\Pages\PainelDeTarefas;
+use App\Filament\Movelveiculos\Widgets\EstatisticasGerais;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -115,13 +117,12 @@ class GrupooliveiranetoPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Grupooliveiraneto/Resources'), for: 'App\Filament\Grupooliveiraneto\Resources')
             ->discoverPages(in: app_path('Filament/Grupooliveiraneto/Pages'), for: 'App\Filament\Grupooliveiraneto\Pages')
             ->pages([
-                Dashboard::class,
-                Board::class
+                \App\Filament\Grupooliveiraneto\Pages\Dashboard::class,
+                PainelDeTarefas::class
             ])
             ->discoverWidgets(in: app_path('Filament/Grupooliveiraneto/Widgets'), for: 'App\Filament\Grupooliveiraneto\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,

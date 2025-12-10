@@ -7,11 +7,12 @@ use App\Filament\Forms\Components\SignaturePad;
 use App\Models\Empresa;
 use App\Models\Entrega\EntregaHorarioBloqueado;
 use App\Models\Modelo;
+use App\Models\Permission;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -28,6 +29,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class EntregaForm
 {
@@ -219,16 +221,7 @@ class EntregaForm
                             ->columnSpanFull(),
 
                     ])
-                    ->disabled(function (){
-                        //if(
-                            //auth()->user()->roles->contains('name', 'Entregador técnico')
-                            //auth()->user()->hasRole('super_admin')
-
-                        //){
-                            //return false;
-                        //}
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Dados Gerais" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Faturamento')
@@ -241,12 +234,7 @@ class EntregaForm
                             ->label('Faturamento')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Faturamento" do formulário de entrega'))
                     ->columns(12),
 
 
@@ -315,54 +303,30 @@ class EntregaForm
                             ->columnSpanFull()
                             ->columns(12),
 
-                    ])->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    }),
+                    ])
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Veículo na troca" do formulário de entrega')),
 
 
                 Section::make('Documentação')
                     ->schema([
                         Toggle::make('documentacao_nota_fiscal')
                             ->label('Nota fiscal')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Nota fiscal" do formulário de entrega'))
                             ->columnSpanFull(),
 
                         Toggle::make('documentacao_documentacao_veiculo_com_placa')
                             ->label('Documentação / Veículo com placa')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Documentação / Veículo com placa" do formulário de entrega'))
                             ->columnSpanFull(),
 
                         Toggle::make('documentacao_chave_reserva')
                             ->label('Chave reserva')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Chave reserva" do formulário de entrega'))
                             ->columnSpanFull(),
 
                         Toggle::make('documentacao_manuais')
                             ->label('Manuais: Proprietário, central multimídia e garantia/revisão (APP meu VW e/ou impresso)')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Manuais: Proprietário, central multimídia e garantia/revisão (APP meu VW e/ou impresso)" do formulário de entrega'))
                             ->columnSpanFull(),
 
                     ])
@@ -380,18 +344,12 @@ class EntregaForm
                             ->disk('local')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Fotos" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Revisão de entrega')
                     ->relationship('revisao_de_entrega')
                     ->schema([
-
 
                         TextInput::make('numero_da_ordem_de_servico')
                             ->label('Número da ordem de serviço')
@@ -482,12 +440,7 @@ class EntregaForm
                             ->columnSpanFull(),
 
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Oficina')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Revisão de entrega" do formulário de entrega'))
                     ->columnSpanFull()
                     ->columns(12),
 
@@ -511,31 +464,19 @@ class EntregaForm
                                     ->required()
                                     ->boolean()
                                     ->inline()
-                                    ->disabled(function (){
-                                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                                            return false;
-                                        }
-                                        return true;
-                                    })
+                                    ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "O acessório já foi instalado?" do formulário de entrega'))
                                     ->columnSpan([
                                         'lg' =>3
                                     ]),
                             ])
                             ->defaultItems(0)
                             ->minItems(0)
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Acessórios" do formulário de entrega'))
                             ->addActionLabel('Adicionar outro acessório')
                             ->columns(12),
                     ])
                     ->columns(1)
                     ->columnSpanFull(),
-
-
 
 
                 Section::make('Serviços estéticos')
@@ -548,12 +489,7 @@ class EntregaForm
                             ->label('Combustível')
                             ->columnSpanFull(),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    })
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Serviços estéticos" do formulário de entrega'))
                     ->columns(12),
 
                 Section::make('Financeiro')
@@ -561,12 +497,7 @@ class EntregaForm
 
                         TextInput::make('financeiro_forma_de_pagamento')
                             ->label('Forma de pagamento')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente financeiro')){
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Forma de pagamento" do formulário de entrega'))
                             ->columnSpan([
                                 'lg' => 12
                             ]),
@@ -581,12 +512,7 @@ class EntregaForm
                             ->openable()
                             ->columnSpanFull()
                             ->disk('local')
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente de vendas') || auth()->user()->roles->contains('name', 'Secretária de vendas')){
-                                    return false;
-                                }
-                                return true;
-                            }),
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Comprovantes de pagamento" do formulário de entrega')),
 
                         Hidden::make('financeiro_autorizada_pelo_financeiro_por'),
 
@@ -603,12 +529,7 @@ class EntregaForm
                                     return 'Não autorizado pelo gerente financeiro';
                                 }
                             })
-                            ->disabled(function ($record, $operation) {
-                                if (auth()->user()->roles->contains('name', 'Gerente financeiro')) {
-                                    return false;
-                                }
-                                return true;
-                            })
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Autorizado pelo financeiro" do formulário de entrega'))
                             ->live()
                             ->afterStateUpdated(function (Set $set, $state){
                                 if($state){
@@ -629,12 +550,7 @@ class EntregaForm
                             ->minDistance(1)
                             ->velocityFilterWeight(0.7)
                             ->columnSpanFull()
-                            ->disabled(function (){
-                                if(auth()->user()->roles->contains('name', 'Gerente financeiro')){
-                                    return false;
-                                }
-                                return true;
-                            }),
+                            ->disabled(fn() => !Permission::can('Entrega - Alterar o campo "Assinatura do gerente financeiro" do formulário de entrega')),
 
                     ])
                     ->columns(12),
@@ -980,14 +896,9 @@ class EntregaForm
                                     ->columnSpanFull(),
                             ]),
                     ])
-                    ->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    }),
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Termo de entrega e aceite de veículo" do formulário de entrega')),
 
-                Section::make('')
+                Section::make('Observações e termos de aceite')
                     ->schema([
 
                         RichEditor::make('observacoes')
@@ -1021,13 +932,8 @@ class EntregaForm
                             ->label('Uso de imagem/vídeo e tratamento de dados')
                             ->helperText('AUTORIZO a utilização de minha imagem e/ou vídeo, integralmente ou em parte, desde a presente data, em caráter gratuito, para utilização em trabalhos de publicidade e/ou divulgação comercial (mídias eletrônicas). Por ser esta a expressão de minha vontade, nada terei a reclamar a título de direitos conexos à minha imagem ou qualquer outro. Declaro ainda que estou ciente e concordo com o tratamento de meus dados de acordo com a Política de Privacidade da concessionária supracitada.')
                             ->columnSpanFull(),
-                    ])->disabled(function (){
-                        if(auth()->user()->roles->contains('name', 'Entregador técnico')){
-                            return false;
-                        }
-                        return true;
-                    }),
-
+                    ])
+                    ->disabled(fn() => !Permission::can('Entrega - Alterar a seção "Observações e termos de aceite" do formulário de entrega')),
 
 
                 Section::make('Orientação CEM')
@@ -1080,9 +986,8 @@ class EntregaForm
 
                     ])
                     ->visible(function ($record, $operation){
-
                         if($operation == 'edit'){
-                            if(auth()->user()->roles->contains('name', 'CRM') && $record->status == 'Finalizada'){
+                            if(Permission::can('Entrega - Alterar a seção "Orientação CEM" do formulário de entrega') && $record->status == 'Finalizada'){
                                 return true;
                             }
                         }
@@ -1139,18 +1044,10 @@ class EntregaForm
                             ->columnSpanFull(),
 
                     ])
-                    ->disabled(function ($record, $operation){
-                        if($operation == 'edit'){
-                            if(auth()->user()->id == $record->created_by){
-
-                            }
-
-                        }
-                    })
                     ->visible(function ($record, $operation){
 
                         if($operation == 'edit'){
-                            if(auth()->user()->roles->contains('name', 'CRM') && $record->status == 'Finalizada'){
+                            if(Permission::can('Entrega - Alterar a seção "Orientação CSI" do formulário de entrega') && $record->status == 'Finalizada'){
                                 return true;
                             }
                         }

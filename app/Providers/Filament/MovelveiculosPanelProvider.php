@@ -4,13 +4,14 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\AdminLogin;
 use App\Filament\Auth\MovelveiculosLogin;
+use App\Filament\Movelveiculos\Pages\AgendaEntregas;
+use App\Filament\Movelveiculos\Pages\Dashboard;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationItem;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
@@ -116,11 +117,11 @@ class MovelveiculosPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Movelveiculos/Pages'), for: 'App\Filament\Movelveiculos\Pages')
             ->pages([
                 Dashboard::class,
+                AgendaEntregas::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Movelveiculos/Widgets'), for: 'App\Filament\Movelveiculos\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,

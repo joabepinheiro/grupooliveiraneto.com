@@ -3,7 +3,6 @@
 namespace App\Filament\Movelveiculos\Resources\SolicitacaoDeEntregas\Tables;
 
 use App\Enums\SolicitacaoDeEntregaStatus;
-use App\Filament\Resources\Entregas\EntregaResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Empresa;
 use App\Models\Entrega\Entrega;
@@ -36,12 +35,6 @@ class SolicitacaoDeEntregasTable
         return $table
             ->reorderableColumns()
             ->columns([
-                TextColumn::make('proposta')
-                    ->label('Proposta')
-                    ->placeholder('Não informado')
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('status')
                     ->label('Status')
                     ->placeholder('Todos')
@@ -51,11 +44,13 @@ class SolicitacaoDeEntregasTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('tipo_venda')
-                    ->label('Tipo de venda')
-                    ->sortable()
+                TextColumn::make('proposta')
+                    ->label('Proposta')
                     ->placeholder('Não informado')
+                    ->view('filament.tables.columns.solicitacao_de_entregas.solicitacao_de_entrega')
+                    ->sortable()
                     ->searchable(),
+
 
                 TextColumn::make('id')
                     ->label('Carro')
@@ -72,21 +67,6 @@ class SolicitacaoDeEntregasTable
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('cliente')
-                    ->label('Cliente')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('vendedor.name')
-                    ->label('Vendedor')
-                    ->forceSearchCaseInsensitive()
-                    ->placeholder('Não informada')
-                    ->toggleable(isToggledHiddenByDefault: false)
-                    ->sortable()
-                    ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label(new HtmlString('Enviado em'))
@@ -96,6 +76,10 @@ class SolicitacaoDeEntregasTable
                     ->sortable()
                     ->searchable(),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->where('empresa_id', '=', Empresa::MOVEL_VEICULOS_ID);
+            })
+            ->defaultSort('entrega_efetivada_em', 'desc')
             ->filters([
                 Filter::make('status')
                     ->schema([
@@ -216,7 +200,7 @@ class SolicitacaoDeEntregasTable
                         ->color('primary')
                         ->requiresConfirmation()
                         ->url(function ($record){
-                            return EntregaResource::getUrl('view', ['record' => $record->entrega_id]);
+                            return \App\Filament\Movelveiculos\Resources\Entregas\EntregaResource::getUrl('view', ['record' => $record->entrega_id]);
                         })
                         ->visible(function ($record) {
                             if($record->status == 'Aprovada'){

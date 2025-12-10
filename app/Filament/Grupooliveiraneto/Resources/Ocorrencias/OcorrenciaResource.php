@@ -2,7 +2,7 @@
 
 namespace App\Filament\Grupooliveiraneto\Resources\Ocorrencias;
 
-use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\Board;
+use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\PainelDeTarefas;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\CreateOcorrencia;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\EditOcorrencia;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\ListOcorrencias;
@@ -10,7 +10,6 @@ use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\ViewOcorrencia;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Schemas\OcorrenciaForm;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Schemas\OcorrenciaInfolist;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Tables\OcorrenciasTable;
-use App\Models\Ocorrencia;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,16 +17,20 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class OcorrenciaResource extends Resource
 {
     protected static ?string $model = \App\Models\Tarefa\Ocorrencia::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'fas-calendar-check';
+    protected static string|BackedEnum|null $navigationIcon ='fas-calendar-check';
 
     protected static ?string $navigationLabel   = 'Ocorrências';
     protected static ?string $modelLabel        = 'Ocorrência';
     protected static ?string $pluralModelLabel  = 'Ocorrências';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Tarefas';
+
 
     public static function form(Schema $schema): Schema
     {
@@ -55,7 +58,7 @@ class OcorrenciaResource extends Resource
     {
         return [
             'index' => ListOcorrencias::route('/'),
-            'create' => CreateOcorrencia::route('/create'),
+            //'create' => CreateOcorrencia::route('/create'),
             'view' => ViewOcorrencia::route('/{record}'),
             'edit' => EditOcorrencia::route('/{record}/edit'),
         ];

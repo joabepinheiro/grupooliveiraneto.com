@@ -91,14 +91,7 @@ class PermissionSeeder extends Seeder
                 // Obter heading / título do widget
                 $heading = null;
 
-                if (method_exists($widget, 'getHeading')) {
-                    $heading = $widget::getHeading();
-                } elseif (method_exists($widget, 'getTitle')) {
-                    $heading = $widget::getTitle();
-                } else {
-                    // Fallback: nome da classe sem namespace
-                    $heading = Str::of($widget)->classBasename()->headline();
-                }
+                $heading = Str::of($widget)->classBasename()->headline();
 
                 Permission::updateOrCreate(
                     [
@@ -115,7 +108,128 @@ class PermissionSeeder extends Seeder
             }
         }
 
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Dados Gerais" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Faturamento" do formulário de entrega',
+            'movelveiculos',
+            ['Secretária de vendas']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Veículo na troca" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Nota fiscal" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Documentação / Veículo com placa" do formulário de entrega',
+            'movelveiculos',
+            ['Secretária de vendas']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Chave reserva" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Manuais: Proprietário, central multimídia e garantia/revisão (APP meu VW e/ou impresso)" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Fotos" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Revisão de entrega" do formulário de entrega',
+            'movelveiculos',
+            ['Oficina']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "O acessório já foi instalado?" do formulário de entrega',
+            'movelveiculos',
+            ['Secretária de vendas', 'Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Acessórios" do formulário de entrega',
+            'movelveiculos',
+            ['Secretária de vendas', 'Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Serviços estéticos" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Forma de pagamento" do formulário de entrega',
+            'movelveiculos',
+            ['Gerente financeiro']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Comprovantes de pagamento" do formulário de entrega',
+            'movelveiculos',
+            ['Gerente de vendas', 'Secretária de vendas']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Autorizado pelo financeiro" do formulário de entrega',
+            'movelveiculos',
+            ['Gerente financeiro']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar o campo "Assinatura do gerente financeiro" do formulário de entrega',
+            'movelveiculos',
+            ['Gerente financeiro']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Termo de entrega e aceite de veículo" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Observações e termos de aceite" do formulário de entrega',
+            'movelveiculos',
+            ['Entregador técnico']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Orientação CEM" do formulário de entrega',
+            'movelveiculos',
+            ['CRM']
+        );
+
+        Permission::createCustomPermissions(
+            'Entrega - Alterar a seção "Orientação CSI" do formulário de entrega',
+            'movelveiculos',
+            ['CRM']
+        );
     }
+
+
 
     public static function translation($index)
     {
