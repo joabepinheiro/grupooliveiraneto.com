@@ -1,12 +1,29 @@
 <x-filament-panels::page>
 
+    {{-- Adicione este bloco de estilo para ocultar a sidebar e ajustar a margem --}}
+    <style>
+
+        .fi-body{
+            background: var(--color-gray-100);
+        }
+        .fi-sidebar,
+        .fi-global-search-ctn,
+        .fi-icon-btn {
+            display: none !important;
+        }
+        .fi-main {
+            padding-inline-start: 30px !important;
+        }
+    </style>
+
+
     <div class="space-y-6">
 
         {{-- Filtros --}}
         @include('filament.grupooliveiraneto.pages.painel-de-tarefas.filters')
 
         {{-- Board --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
 
             {{-- Coluna Pendente --}}
             @include('filament.grupooliveiraneto.pages.painel-de-tarefas.column', [

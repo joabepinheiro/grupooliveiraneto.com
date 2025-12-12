@@ -1,69 +1,82 @@
 {{-- Safelist para classes dinâmicas
-    bg-gray-500 bg-yellow-500 bg-blue-500 bg-green-500
-    text-gray-600 text-yellow-600 text-blue-600 text-green-600
-    border-gray-200 border-yellow-200 border-blue-200 border-green-200
-    border-l-gray-500 border-l-yellow-500 border-l-blue-500 border-l-green-500
+    bg-gray-600 bg-yellow-600 bg-blue-600 bg-green-600 bg-red-600 bg-red-50
+    bg-gray-500 bg-yellow-500 bg-blue-500 bg-green-500 bg-red-500
+    bg-gray-200 bg-yellow-200 bg-blue-200 bg-green-200 bg-red-200
+    bg-gray-100 bg-yellow-100 bg-blue-100 bg-green-100 bg-red-100
+    bg-gray-50 bg-yellow-50 bg-blue-50 bg-green-50 bg-red-50
+
+    text-gray-600 text-yellow-600 text-blue-600 text-green-600 text-red-600
+    text-gray-900 text-yellow-900 text-blue-900 text-green-900 text-red-900
+
+    border-gray-200 border-yellow-200 border-blue-200 border-green-200 border-red-200
+    border-l-gray-500 border-l-yellow-500 border-l-blue-500 border-l-green-500 border-l-red-500
+
+    text-blue-900 text-yellow-900 text-green-900 text-gray-900 text-red-900
+
+    border-b-blue-500 border-b-yellow-500 border-b-green-500 border-b-blue-500 border-b-gray-500 border-b-red-500
 --}}
 
 @php
     $isAtrasado = $ocorrencia->data_fim->isPast() && $ocorrencia->status !== 'Concluído';
 
-    $fimClasses = $isAtrasado
-        ? 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 ring-red-600/20 dark:ring-red-500/30'
-        : 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 ring-yellow-600/20 dark:ring-yellow-500/30';
+    if ($isAtrasado) {
+       $color = 'red';
+    }
 @endphp
 
 <div
     wire:click="editOcorrencia({{ $ocorrencia->id }})"
     class="
+        relative
         p-4 rounded-lg cursor-pointer transition-shadow
-        bg-gray-50 dark:bg-gray-900/50
-        border border-gray-200 dark:border-gray-700
-        border-l-8 border-l-{{ $color }}-500
+        bg-white
+        border border-gray-100
+        border-l-4 border-l-{{ $color }}-500
         hover:shadow-md
     "
 >
-    {{-- ID + Recorrência --}}
-    <span class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3 block">
-        @if($ocorrencia->tarefa->recorrencia_tem)
-            <span title="Tarefa recorrente">*</span>
-        @endif
-
-        ID: {{ $ocorrencia->id }}
-    </span>
 
     {{-- Título --}}
-    <h4 class="font-semibold text-gray-900 dark:text-white py-2">
+    <h4 class="text-base font-semibold text-gray-800 py-0">
         {{ $ocorrencia->titulo }}
     </h4>
 
+    {{-- Responsáveis --}}
+    @if(!empty($ocorrencia->responsaveis))
+        <div class="text-xs font-normal text-gray-800  pt-1 pb-2">
+            {{ $ocorrencia->responsaveis_nomes ?? '' }}
+        </div>
+    @endif
+
     {{-- Início --}}
     <div class="
-        inline-flex items-center px-3 py-1 mb-2 text-xs font-medium rounded-md ring-1 ring-inset
-        bg-gray-100 dark:bg-gray-500/10
-        text-gray-600 dark:text-gray-400
-        ring-gray-600/20 dark:ring-gray-500/30
+        inline-flex items-center px-2 py-1 mb-0 text-sm font-semibold rounded-md
+        bg-{{$color}}-100
+        text-{{$color}}-900
+        ring-gray-600/20
     ">
-        Início: {{ $ocorrencia->data_inicio->format('d/m/y - H:i') }}
+        De: {{ $ocorrencia->data_inicio->format('d/m - H:i') }}
     </div>
 
     {{-- Fim / Atrasado --}}
     <div class="
-        inline-flex items-center px-3 py-1 mb-2 text-xs font-medium rounded-md ring-1 ring-inset
-        {{ $fimClasses }}
+        inline-flex items-center px-2 py-1 mb-0 text-sm font-semibold rounded-md
+        bg-{{$color}}-100
+        text-{{$color}}-900
+        ring-gray-600/20
     ">
-        Fim: {{ $ocorrencia->data_fim->format('d/m/y - H:i') }}
-
+        Até: {{ $ocorrencia->data_fim->format('d/m - H:i') }}
         @if($isAtrasado)
             (atrasado)
         @endif
     </div>
 
-    {{-- Responsáveis --}}
-    @if(!empty($ocorrencia->responsaveis))
-        <div class="text-sm font-normal text-gray-800 dark:text-gray-300 pt-2 pb-3">
-            <b class="font-semibold">Responsáveis:</b><br>
-            {{ collect($users)->only($ocorrencia->responsaveis ?? [])->implode(', ') }}
-        </div>
-    @endif
+    {{-- ID + Recorrência --}}
+    <span class="absolute bottom-1 right-2 text-xs text-gray-600">
+        @if($ocorrencia->tarefa->recorrencia_tem)
+            <span title="Tarefa recorrente">*</span>
+        @endif
+        {{ $ocorrencia->id }}
+    </span>
+
 </div>

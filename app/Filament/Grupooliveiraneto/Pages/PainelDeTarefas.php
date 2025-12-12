@@ -10,30 +10,27 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Section;
-
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use UnitEnum;
 
-// Adicionado o HasFiltersForm ao use
 class PainelDeTarefas extends Page implements HasForms
 {
     use InteractsWithForms;
-    use HasFiltersForm; // 1. Adiciona o trait para habilitar o formulário de filtros
+    use HasFiltersForm;
 
     protected static string|null|\BackedEnum $navigationIcon = 'fab-trello';
 
@@ -44,8 +41,10 @@ class PainelDeTarefas extends Page implements HasForms
 
     protected static ?string $slug = 'painel-de-tarefas';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Tarefas';
+    protected static string|UnitEnum|null $navigationGroup = 'Tarefas';
 
+    /** Cache simples de opções de usuários (evita múltiplas queries por request) */
+    protected static ?array $cachedUserOptions = null;
 
     /** Modelo sendo editado */
     public ?Ocorrencia $ocorrencia = null;
@@ -53,8 +52,7 @@ class PainelDeTarefas extends Page implements HasForms
     /** Estado do formulário (ESSENCIAL) */
     public array $data = [];
 
-    // As propriedades dos filtros são armazenadas na propriedade pública $filters,
-    // que é injetada pelo HasFiltersForm.
+    // ... existing code ...
 
     protected function getHeaderActions(): array
     {
@@ -64,80 +62,71 @@ class PainelDeTarefas extends Page implements HasForms
                 ->schema(TarefaForm::components())
                 ->using(function (array $data): Tarefa {
                     return Tarefa::create($data);
-                })
+                }),
         ];
     }
 
     public function mount(): void
     {
+        Filament::getCurrentPanel()->darkMode(false);
 
-
-        // Preenche o form state
         $this->form->fill([
             'descricao' => '',
         ]);
 
         $this->filters = [
             'search_title' => '',
-            'filter_responsavel'    => null,
-            'filter_data_fim_de'    => today()->addDay(-30),
-            'filter_data_fim_ate'   => today()->addDays(30),
-            'filter_mes'            => today()->format('m'),
-            'filter_ano'            => today()->format('Y'),
+            'filter_responsavel' => null,
+            'filter_data_fim_de' => today()->startOfWeek(),
+            'filter_data_fim_ate' => today()->endOfWeek(),
+            'filter_mes' => today()->format('m'),
+            'filter_ano' => today()->format('Y'),
         ];
     }
 
-    /** Define onde o formulário armazena os valores */
     protected function getFormStatePath(): ?string
     {
-        return 'data'; // ← Sem isso, NUNCA preenche o formulário
+        return 'data';
+    }
+
+    protected function getUserOptions(): array
+    {
+        if (static::$cachedUserOptions !== null) {
+            return static::$cachedUserOptions;
+        }
+
+        return static::$cachedUserOptions = User::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->all();
     }
 
     public function editOcorrencia(Ocorrencia $ocorrencia)
     {
+        $responsaveis = $ocorrencia->responsaveis ?? [];
+
+        if (! in_array(auth()->id(), $responsaveis) && $ocorrencia->created_by != auth()->id()) {
+            Notification::make()
+                ->title('Acesso negado')
+                ->body('Você só pode editar tarefas das quais é responsável.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
         $this->ocorrencia = $ocorrencia;
 
-        // Preenche os campos do formulário
         $this->form->fill($ocorrencia->toArray());
 
-        // Abre o modal
         $this->dispatch('open-modal', id: 'editar-ocorrencia');
     }
-
 
     protected function getFormSchema(): array
     {
         return [
             Section::make('')
                 ->schema([
-
-                    TextInput::make('titulo')
-                        ->label('Título')
-                        ->required()
-                        ->columnSpanFull()
-                        ->maxLength(255),
-
-
-                    DateTimePicker::make('data_inicio')
-                        ->label('Data e hora de início')
-                        ->seconds(false)
-                        ->prefixIcon('fas-calendar-days')
-                        ->required()
-                        ->columnSpan([
-                            'lg' => 6
-                        ]),
-
-
-                    DateTimePicker::make('data_fim')
-                        ->label('Data e hora de término')
-                        ->required()
-                        ->seconds(false)
-                        ->prefixIcon('fas-calendar-days')
-                        ->after('data_inicio')
-                        ->columnSpan([
-                            'lg' => 6
-                        ]),
-
                     Select::make('status')
                         ->label('Status')
                         ->live()
@@ -147,10 +136,37 @@ class PainelDeTarefas extends Page implements HasForms
                         ->default('pendente')
                         ->columnSpanFull(),
 
+                    TextInput::make('titulo')
+                        ->label('Título')
+                        ->required()
+                        ->extraAttributes(['class' => 'font-semibold'])
+                        ->columnSpanFull()
+                        ->maxLength(255),
+
+                    DateTimePicker::make('data_inicio')
+                        ->label('Data e hora de início')
+                        ->seconds(false)
+                        ->prefixIcon('fas-calendar-days')
+                        ->required()
+                        ->columnSpan([
+                            'lg' => 6,
+                        ]),
+
+                    DateTimePicker::make('data_fim')
+                        ->label('Data e hora de término')
+                        ->required()
+                        ->seconds(false)
+                        ->prefixIcon('fas-calendar-days')
+                        ->after('data_inicio')
+                        ->columnSpan([
+                            'lg' => 6,
+                        ]),
+
                     Select::make('responsaveis')
                         ->label('Responsáveis')
                         ->multiple()
-                        ->options(User::all()->pluck('name', 'id')->toArray())
+                        ->extraAttributes(['class' => 'font-semibold'])
+                        ->options(fn (): array => $this->getUserOptions())
                         ->columnSpanFull(),
 
                     RichEditor::make('descricao')
@@ -162,7 +178,7 @@ class PainelDeTarefas extends Page implements HasForms
                         ->readOnly()
                         ->disabled()
                         ->columnSpan([
-                            'lg' => 4
+                            'lg' => 4,
                         ]),
 
                     DateTimePicker::make('created_at')
@@ -170,21 +186,20 @@ class PainelDeTarefas extends Page implements HasForms
                         ->readOnly()
                         ->disabled()
                         ->columnSpan([
-                            'lg' => 4
+                            'lg' => 4,
                         ]),
 
                     TextInput::make('created_by')
                         ->label('Cadastrado por')
                         ->readOnly()
                         ->disabled()
-                        ->formatStateUsing(function ($state){
-                            return User::find($state)->name ?? 'Não infomado';
+                        ->formatStateUsing(function ($state) {
+                            $users = $this->getUserOptions();
+                            return $users[(int) $state] ?? 'Não infomado';
                         })
                         ->columnSpan([
-                            'lg' => 4
+                            'lg' => 4,
                         ]),
-
-
                 ])
                 ->columns(12),
         ];
@@ -193,32 +208,37 @@ class PainelDeTarefas extends Page implements HasForms
     public function filtersForm(Schema $schema): Schema
     {
         return $schema->components([
-
-            Section::make('Filtro de tarefas')
+            Section::make('')
+                ->contained(false)
                 ->schema([
-
                     TextInput::make('search_id')
                         ->label('ID')
+                        ->hiddenLabel(true)
+                        ->placeholder('ID')
                         ->debounce(500)
                         ->numeric()
                         ->columnSpan([
-                            'lg' => 1
+                            'lg' => 1,
                         ]),
 
                     TextInput::make('search_title')
                         ->label('Título')
+                        ->placeholder('Título')
+                        ->hiddenLabel(true)
                         ->placeholder('Ex: Reunião')
                         ->debounce(500)
                         ->columnSpan([
-                            'lg' => 3
+                            'lg' => 3,
                         ]),
 
                     Select::make('filter_responsavel')
                         ->label('Responsável')
-                        ->options(User::pluck('name', 'id'))
+                        ->placeholder('Responsável')
+                        ->hiddenLabel(true)
+                        ->options(fn (): array => $this->getUserOptions())
                         ->searchable()
                         ->columnSpan([
-                            'lg' => 3
+                            'lg' => 3,
                         ]),
 
                     FusedGroup::make([
@@ -229,29 +249,99 @@ class PainelDeTarefas extends Page implements HasForms
                             ->prefix('Até'),
                     ])
                         ->label('Prazo')
+                        ->hiddenLabel(true)
                         ->columns(2)
                         ->columnSpan([
-                            'lg' => 5
+                            'lg' => 5,
                         ]),
                 ])
                 ->columnSpanFull()
-                ->columns(12)
-
+                ->columns(12),
         ]);
     }
-
 
     public function save()
     {
         if ($this->ocorrencia) {
+            $responsaveis = $this->ocorrencia->responsaveis ?? [];
+
+            if (! in_array(auth()->id(), $responsaveis) && $this->ocorrencia->created_by !== auth()->id()) {
+                Notification::make()
+                    ->title('Ação não autorizada')
+                    ->body('Você não tem permissão para salvar alterações nesta tarefa.')
+                    ->danger()
+                    ->send();
+
+                return;
+            }
 
             $this->ocorrencia->update($this->form->getState());
         }
 
         $this->dispatch('close-modal', id: 'editar-ocorrencia');
-
-        // Atualiza a página
         $this->dispatch('$refresh');
+    }
+
+    // ... existing code ...
+
+    protected function getViewData(): array
+    {
+        $baseQuery = Ocorrencia::query()
+            ->select([
+                'id',
+                'tarefa_id',
+                'titulo',
+                'status',
+                'responsaveis',
+                'data_inicio',
+                'data_fim',
+                'created_by',
+                'created_at',
+            ])
+            ->with([
+                'tarefa:id,recorrencia_tem,rrule',
+            ]);
+
+        if (! empty($this->filters['search_id'])) {
+            $baseQuery->where('ID', $this->filters['search_id']);
+        }
+
+        if (! empty($this->filters['search_title'])) {
+            $baseQuery->where('titulo', 'like', '%' . $this->filters['search_title'] . '%');
+        }
+
+        if (! empty($this->filters['filter_responsavel'])) {
+            $baseQuery->whereJsonContains('responsaveis', (int) $this->filters['filter_responsavel']);
+        }
+
+        if (! empty($this->filters['filter_data_fim_de'])) {
+            $baseQuery->whereDate('data_fim', '>=', $this->filters['filter_data_fim_de']);
+        }
+
+        if (! empty($this->filters['filter_data_fim_ate'])) {
+            $baseQuery->whereDate('data_fim', '<=', $this->filters['filter_data_fim_ate']);
+        }
+
+        $allOcorrencias = $baseQuery->latest()->get();
+
+        // Pré-calcula os nomes de responsáveis 1x por ocorrência (evita trabalho repetido no Blade)
+        $users = collect($this->getUserOptions());
+
+        $allOcorrencias->each(function (Ocorrencia $ocorrencia) use ($users): void {
+            $ids = $ocorrencia->responsaveis ?? [];
+            $ocorrencia->responsaveis_nomes = empty($ids)
+                ? ''
+                : $users->only($ids)->implode(', ');
+        });
+
+        $grouped = $allOcorrencias->groupBy('status');
+
+        return [
+            'users' => $users,
+            'pendentes' => $grouped->get('Pendente', collect()),
+            'em_andamento' => $grouped->get('Em andamento', collect()),
+            'concluidos' => $grouped->get('Concluído', collect()),
+        ];
     }
 
     public function deleteAction(): Action
@@ -263,7 +353,6 @@ class PainelDeTarefas extends Page implements HasForms
             ->modalHeading('Excluir Ocorrência')
             ->modalDescription('Como você deseja excluir esta ocorrência?')
             ->schema(function () {
-                // Se não for recorrente, não mostra opções, apenas confirmação padrão
                 if (! $this->ocorrencia?->tarefa?->rrule) {
                     return [];
                 }
@@ -287,32 +376,24 @@ class PainelDeTarefas extends Page implements HasForms
 
                 $scope = $data['scope'] ?? 'single';
 
-                // Se não for recorrente, força exclusão única
                 if (! $this->ocorrencia->tarefa?->rrule) {
                     $scope = 'single';
                 }
 
                 switch ($scope) {
                     case 'single':
-                        // Exclui apenas esta ocorrência
                         $this->ocorrencia->delete();
                         break;
 
                     case 'following':
-                        // Exclui esta e as futuras da mesma tarefa
                         Ocorrencia::where('tarefa_id', $this->ocorrencia->tarefa_id)
                             ->where('data_inicio', '>=', $this->ocorrencia->data_inicio)
                             ->delete();
                         break;
 
                     case 'all':
-
-                        Ocorrencia::where('tarefa_id', $this->ocorrencia->tarefa_id)
-                            ->delete();
-
-                        Tarefa::where('id', $this->ocorrencia->tarefa_id)
-                            ->delete();
-
+                        Ocorrencia::where('tarefa_id', $this->ocorrencia->tarefa_id)->delete();
+                        Tarefa::where('id', $this->ocorrencia->tarefa_id)->delete();
                         break;
                 }
 
@@ -321,53 +402,16 @@ class PainelDeTarefas extends Page implements HasForms
             });
     }
 
-    /** Valores enviados para a view Blade */
-    protected function getViewData(): array
+    /**
+     * Expõe a Action como "property" ($this->deleteAction) para o Blade/Livewire.
+     */
+    public function getDeleteActionProperty(): Action
     {
-        // Cria a query base
-        $baseQuery = Ocorrencia::query();
-
-        // Aplica os filtros
-        if (!empty($this->filters['search_id'])) {
-            $baseQuery->where('ID', $this->filters['search_id']);
-        }
-
-        if (!empty($this->filters['search_title'])) {
-            $baseQuery->where('titulo', 'like', '%' . $this->filters['search_title'] . '%');
-        }
-
-        if (!empty($this->filters['filter_responsavel'])) {
-
-            $baseQuery->whereJsonContains('responsaveis', (int) $this->filters['filter_responsavel']);
-        }
-
-        if (!empty($this->filters['filter_data_fim_de'])) {
-            $baseQuery->whereDate('data_fim', '>=', $this->filters['filter_data_fim_de']);
-        }
-
-        if (!empty($this->filters['filter_data_fim_ate'])) {
-            $baseQuery->whereDate('data_fim', '<=', $this->filters['filter_data_fim_ate']);
-        }
-
-        // Executa a query uma única vez
-        $allOcorrencias = $baseQuery->latest()->get();
-
-        // Agrupa por status
-        $grouped = $allOcorrencias->groupBy('status');
-
-        return [
-            'users' => User::pluck('name', 'id'), // pluck já executa direto sem carregar tudo
-            'pendentes' => $grouped->get('Pendente', collect()),
-            'em_andamento' => $grouped->get('Em andamento', collect()),
-            'concluidos' => $grouped->get('Concluído', collect()),
-        ];
+        return $this->deleteAction();
     }
-
 
     protected function getFormModel(): string|null
     {
-        return null; // necessário em custom pages
+        return null;
     }
-
-
 }
