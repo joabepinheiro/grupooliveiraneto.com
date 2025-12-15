@@ -7,6 +7,7 @@ use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\CreateOcorrencia;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\EditOcorrencia;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\ListOcorrencias;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Pages\ViewOcorrencia;
+use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\RelationManagers\LogsRelationManager;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Schemas\OcorrenciaForm;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Schemas\OcorrenciaInfolist;
 use App\Filament\Grupooliveiraneto\Resources\Ocorrencias\Tables\OcorrenciasTable;
@@ -50,8 +51,13 @@ class OcorrenciaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'logs' => LogsRelationManager::class,
         ];
+    }
+
+    public function isReadOnly(): bool
+    {
+        return false;
     }
 
     public static function getPages(): array

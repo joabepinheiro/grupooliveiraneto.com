@@ -25,6 +25,7 @@ class Tarefa extends AbstractModel
     protected $table = 'agenda_tarefas';
 
     protected $fillable = [
+        'agenda',
         'titulo',
         'descricao',
         'data_inicio',
@@ -32,6 +33,7 @@ class Tarefa extends AbstractModel
         'rrule',
         'status',
         'responsaveis',
+        'departamentos',
 
         'recorrencia_tem',
         'recorrencia_intervalo',
@@ -54,6 +56,7 @@ class Tarefa extends AbstractModel
     protected $casts = [
         'recorrencia_dias_semana' => 'array',
         'responsaveis' => 'array',
+        'departamentos' => 'array',
 
         'data_inicio' => 'datetime',
         'data_fim'    => 'datetime',
@@ -61,6 +64,9 @@ class Tarefa extends AbstractModel
         'recorrencia_data_fim' => 'datetime',
     ];
 
+    protected $attributes = [
+        'agenda' => 'grupooliveiraneto',
+    ];
 
     protected static function booted(): void
     {

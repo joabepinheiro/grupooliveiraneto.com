@@ -34,6 +34,7 @@ class RecorrenciaService
             'data_fim'     => $tarefa->data_fim,
             'status'       => $tarefa->status,
             'responsaveis' => $tarefa->responsaveis,
+            'departamentos' => $tarefa->departamentos,
             'is_excecao'   => false,
 
             'created_by'   => $tarefa->created_by,
@@ -84,6 +85,7 @@ class RecorrenciaService
                 'data_fim'     => (clone $inicio)->add($duracao),
                 'status'       => $tarefa->status,
                 'responsaveis' => $tarefa->responsaveis ? json_encode($tarefa->responsaveis) : null,
+                'departamentos' => $tarefa->departamentos ? json_encode($tarefa->departamentos) : null,
                 'is_excecao'   => false,
                 'created_at'   => $agora,
                 'updated_at'   => null,

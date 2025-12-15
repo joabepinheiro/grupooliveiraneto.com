@@ -17,6 +17,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Widgets\AccountWidget;
@@ -27,6 +28,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class GrupooliveiranetoPanelProvider extends PanelProvider
@@ -54,6 +56,7 @@ class GrupooliveiranetoPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/grupooliveiraneto/theme.css')
             ->assets([
                 Css::make('grupooliveiraneto', __DIR__ . '/../../../resources/css/grupooliveiraneto.css'),
+                Js::make('app', Vite::asset('resources/js/app.js'))->module(),
             ])
             ->navigationItems([
                 NavigationItem::make('Grupo Oliveira Neto')

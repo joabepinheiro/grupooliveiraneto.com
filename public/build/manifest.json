@@ -1,0 +1,38 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-LIGIt3rr.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/css/filament/admin/theme.css": {
+    "file": "assets/theme--4zS0IWa.css",
+    "src": "resources/css/filament/admin/theme.css"
+  },
+  "resources/css/filament/bydconquista/theme.css": {
+    "file": "assets/theme-DbR0ZBpN.css",
+    "src": "resources/css/filament/bydconquista/theme.css",
+    "isEntry": true,
+    "name": "theme",
+    "names": [
+      "theme.css"
+    ]
+  },
+  "resources/css/filament/grupooliveiraneto/theme.css": {
+    "file": "assets/theme-vajjO0Zb.css",
+    "src": "resources/css/filament/grupooliveiraneto/theme.css"
+  },
+  "resources/css/filament/movelveiculos/theme.css": {
+    "file": "assets/theme-Bloumm6K.css",
+    "src": "resources/css/filament/movelveiculos/theme.css"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DQYA25G_.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

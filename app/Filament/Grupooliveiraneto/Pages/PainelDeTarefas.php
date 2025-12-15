@@ -2,6 +2,7 @@
 
 namespace App\Filament\Grupooliveiraneto\Pages;
 
+use App\Enums\OcorrenciaDepartamentos;
 use App\Enums\TarefaStatus;
 use App\Filament\Grupooliveiraneto\Resources\Tarefas\Schemas\TarefaForm;
 use App\Models\Tarefa\Ocorrencia;
@@ -169,6 +170,14 @@ class PainelDeTarefas extends Page implements HasForms
                         ->options(fn (): array => $this->getUserOptions())
                         ->columnSpanFull(),
 
+
+                    Select::make('departamentos')
+                        ->label('Departamentos')
+                        ->multiple()
+                        ->extraAttributes(['class' => 'font-semibold'])
+                        ->options(OcorrenciaDepartamentos::values())
+                        ->columnSpanFull(),
+
                     RichEditor::make('descricao')
                         ->label('Descrição')
                         ->columnSpanFull(),
@@ -213,30 +222,39 @@ class PainelDeTarefas extends Page implements HasForms
                 ->schema([
                     TextInput::make('search_id')
                         ->label('ID')
-                        ->hiddenLabel(true)
+                        ->hiddenLabel(false)
                         ->placeholder('ID')
                         ->debounce(500)
                         ->numeric()
                         ->columnSpan([
-                            'lg' => 1,
+                            'lg' => 3,
                         ]),
 
                     TextInput::make('search_title')
                         ->label('Título')
                         ->placeholder('Título')
-                        ->hiddenLabel(true)
+                        ->hiddenLabel(false)
                         ->placeholder('Ex: Reunião')
                         ->debounce(500)
                         ->columnSpan([
-                            'lg' => 3,
+                            'lg' => 5,
                         ]),
 
                     Select::make('filter_responsavel')
                         ->label('Responsável')
-                        ->placeholder('Responsável')
-                        ->hiddenLabel(true)
+                        ->placeholder('Todos os responsável')
+                        ->hiddenLabel(false)
                         ->options(fn (): array => $this->getUserOptions())
                         ->searchable()
+                        ->columnSpan([
+                            'lg' => 4,
+                        ]),
+
+                    Select::make('filter_departamentos')
+                        ->label('Departamentos')
+                        ->placeholder('Todos os departamentos')
+                        ->hiddenLabel(false)
+                        ->options(OcorrenciaDepartamentos::values())
                         ->columnSpan([
                             'lg' => 3,
                         ]),
@@ -249,10 +267,10 @@ class PainelDeTarefas extends Page implements HasForms
                             ->prefix('Até'),
                     ])
                         ->label('Prazo')
-                        ->hiddenLabel(true)
+                        ->hiddenLabel(false)
                         ->columns(2)
                         ->columnSpan([
-                            'lg' => 5,
+                            'lg' => 9,
                         ]),
                 ])
                 ->columnSpanFull()
@@ -289,10 +307,12 @@ class PainelDeTarefas extends Page implements HasForms
         $baseQuery = Ocorrencia::query()
             ->select([
                 'id',
+                'agenda',
                 'tarefa_id',
                 'titulo',
                 'status',
                 'responsaveis',
+                'departamentos',
                 'data_inicio',
                 'data_fim',
                 'created_by',
@@ -301,6 +321,8 @@ class PainelDeTarefas extends Page implements HasForms
             ->with([
                 'tarefa:id,recorrencia_tem,rrule',
             ]);
+
+        $baseQuery->where('agenda', '=', 'grupooliveiraneto');
 
         if (! empty($this->filters['search_id'])) {
             $baseQuery->where('ID', $this->filters['search_id']);
@@ -314,6 +336,10 @@ class PainelDeTarefas extends Page implements HasForms
             $baseQuery->whereJsonContains('responsaveis', (int) $this->filters['filter_responsavel']);
         }
 
+        if (! empty($this->filters['filter_departamentos'])) {
+            $baseQuery->whereJsonContains('departamentos', $this->filters['filter_departamentos']);
+        }
+
         if (! empty($this->filters['filter_data_fim_de'])) {
             $baseQuery->whereDate('data_fim', '>=', $this->filters['filter_data_fim_de']);
         }
@@ -322,7 +348,7 @@ class PainelDeTarefas extends Page implements HasForms
             $baseQuery->whereDate('data_fim', '<=', $this->filters['filter_data_fim_ate']);
         }
 
-        $allOcorrencias = $baseQuery->latest()->get();
+        $allOcorrencias = $baseQuery->orderBy('data_fim', 'ASC')->get();
 
         // Pré-calcula os nomes de responsáveis 1x por ocorrência (evita trabalho repetido no Blade)
         $users = collect($this->getUserOptions());
@@ -408,6 +434,53 @@ class PainelDeTarefas extends Page implements HasForms
     public function getDeleteActionProperty(): Action
     {
         return $this->deleteAction();
+    }
+
+    public function moveOcorrencia(int $ocorrenciaId, string $toStatus): void
+    {
+        $allowed = ['Pendente', 'Em andamento', 'Concluído'];
+
+        if (! in_array($toStatus, $allowed, true)) {
+            Notification::make()
+                ->title('Status inválido')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $ocorrencia = Ocorrencia::query()->find($ocorrenciaId);
+
+        if (! $ocorrencia) {
+            Notification::make()
+                ->title('Ocorrência não encontrada')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $responsaveis = $ocorrencia->responsaveis ?? [];
+
+        if (! in_array(auth()->id(), $responsaveis) && $ocorrencia->created_by != auth()->id()) {
+            Notification::make()
+                ->title('Ação não autorizada')
+                ->body('Você não tem permissão para mover esta tarefa.')
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $ocorrencia->update([
+            'status' => $toStatus,
+        ]);
+
+        Notification::make()
+            ->title('Tarefa movida')
+            ->body("Novo status: {$toStatus}")
+            ->success()
+            ->send();
     }
 
     protected function getFormModel(): string|null

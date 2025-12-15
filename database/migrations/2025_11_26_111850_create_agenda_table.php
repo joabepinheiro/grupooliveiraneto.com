@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('agenda_tarefas', function (Blueprint $table) {
             $table->id();
 
+            $table->string('agenda')->default('grupooliveiraneto');
             $table->string('titulo');
             $table->text('descricao')->nullable();
 
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('status')->default('pendente')->index(); // filtros por status
 
             $table->text('responsaveis')->nullable();
+            $table->string('departamentos', 255)->nullable();
 
             $table->boolean('recorrencia_tem')->nullable();
             $table->integer('recorrencia_intervalo')->nullable();
@@ -53,6 +55,7 @@ return new class extends Migration
         Schema::create('agenda_ocorrencias_tarefas', function (Blueprint $table) {
             $table->id();
 
+            $table->string('agenda')->default('grupooliveiraneto');
             $table->string('titulo')->nullable();
             $table->text('descricao')->nullable();
 
@@ -67,6 +70,7 @@ return new class extends Migration
             $table->string('status')->default('pendente')->index();
 
             $table->text('responsaveis')->nullable();
+            $table->string('departamentos', 255)->nullable();
 
             $table->boolean('is_excecao')->default(false)->index();
             // geralmente usado em filtros, então index ajuda muito

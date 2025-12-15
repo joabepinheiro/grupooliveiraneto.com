@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\ActivityLogs\Schemas;
 
 use App\Enums\ActivityLogEvent;
+use App\Filament\Infolists\Components\ActivityLogPropertiesEntry;
 use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -104,9 +106,18 @@ class ActivityLogInfolist
                 Grid::make(2)
                     ->schema([
 
+                        ActivityLogPropertiesEntry::make('properties')
+                            ->label('Propriedades')
+                            ->columnSpanFull(),
+
+                        /**
                         KeyValueEntry::make('properties.old')
                             ->hidden(fn ($get) => empty($get('properties.old')))
                             ->extraAttributes(['class' => 'max-w'])
+                            ->state(function ($state) {
+                                dd($state);
+                            } )
+
                             ->label('Registro antes da alteração'),
 
                         KeyValueEntry::make('properties.attributes')
@@ -118,6 +129,7 @@ class ActivityLogInfolist
                             ->hidden(fn ($get) => empty($get('properties.new')))
                             ->extraAttributes(['class' => 'max-w'])
                             ->label('Dados alterados'),
+                         * **/
 
                     ])->columnSpanFull(),
 

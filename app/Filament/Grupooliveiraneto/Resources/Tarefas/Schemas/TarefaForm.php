@@ -2,11 +2,13 @@
 
 namespace App\Filament\Grupooliveiraneto\Resources\Tarefas\Schemas;
 
+use App\Enums\OcorrenciaDepartamentos;
 use App\Enums\TarefaStatus;
 use App\Models\User;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -72,6 +74,14 @@ class TarefaForm
                         ->label('Responsáveis')
                         ->multiple()
                         ->options(User::all()->pluck('name', 'id')->toArray())
+                        ->columnSpanFull(),
+
+                    Select::make('departamentos')
+                        ->label('Departamentos')
+                        ->multiple()
+                        ->extraAttributes(['class' => 'font-semibold'])
+                        ->options(OcorrenciaDepartamentos::values())
+                        ->columnSpanFull()
                         ->columnSpanFull(),
 
                     RichEditor::make('descricao')

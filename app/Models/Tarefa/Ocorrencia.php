@@ -18,6 +18,7 @@ class Ocorrencia extends AbstractModel
     protected $table = 'agenda_ocorrencias_tarefas';
 
     protected $fillable = [
+        'agenda',
         'tarefa_id',
         'titulo',
         'descricao',
@@ -25,6 +26,7 @@ class Ocorrencia extends AbstractModel
         'data_fim',
         'status',
         'responsaveis',
+        'departamentos',
         'is_excecao',
 
         'created_by',
@@ -39,9 +41,14 @@ class Ocorrencia extends AbstractModel
 
     protected $casts = [
         'responsaveis'        => 'array',
+        'departamentos'        => 'array',
         'data_inicio'        => 'datetime',
         'data_fim'           => 'datetime',
         'is_excecao'         => 'boolean',
+    ];
+
+    protected $attributes = [
+        'agenda' => 'grupooliveiraneto',
     ];
 
     public function tarefa(): BelongsTo

@@ -81,7 +81,10 @@ class ActivityLogsTable
 
                 SelectFilter::make('subject_type')
                     ->label('Tipo')
+                    ->searchable()
                     ->options([
+                        'App\Models\Tarefa\Ocorrencia'   => 'Ocorrência',
+                        'App\Models\Tarefa\Tarefa'       => 'Tarefa',
                         'App\Models\Material\Abertura'   => 'Abertura',
                         'App\Models\Material\Base'       => 'Base',
                         'App\Models\Material\Categoria'  => 'Categoria',
