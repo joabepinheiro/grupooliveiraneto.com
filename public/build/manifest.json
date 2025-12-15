@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CPtFk3op.css",
+    "file": "assets/app-P4Z1DSLh.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -9,11 +9,11 @@
     ]
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-16UQ0ksd.css",
+    "file": "assets/theme-BxcI26jO.css",
     "src": "resources/css/filament/admin/theme.css"
   },
   "resources/css/filament/bydconquista/theme.css": {
-    "file": "assets/theme-CwL8npAi.css",
+    "file": "assets/theme-DXlGBl42.css",
     "src": "resources/css/filament/bydconquista/theme.css",
     "isEntry": true,
     "name": "theme",
@@ -22,11 +22,11 @@
     ]
   },
   "resources/css/filament/grupooliveiraneto/theme.css": {
-    "file": "assets/theme-C2jZzt5H.css",
+    "file": "assets/theme-D86RjnDX.css",
     "src": "resources/css/filament/grupooliveiraneto/theme.css"
   },
   "resources/css/filament/movelveiculos/theme.css": {
-    "file": "assets/theme-CEa-WCbO.css",
+    "file": "assets/theme-CPjNG1Q2.css",
     "src": "resources/css/filament/movelveiculos/theme.css"
   },
   "resources/js/app.js": {
