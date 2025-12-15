@@ -37,6 +37,7 @@ class BydconquistaPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->globalSearch(false)
             ->databaseNotifications()
             ->login(BydLogin::class)
             ->databaseNotifications()

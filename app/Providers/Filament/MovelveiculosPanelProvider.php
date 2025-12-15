@@ -37,7 +37,7 @@ class MovelveiculosPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-
+            ->globalSearch(false)
             ->databaseNotifications()
             ->login(MovelveiculosLogin::class)
             ->databaseNotifications()
