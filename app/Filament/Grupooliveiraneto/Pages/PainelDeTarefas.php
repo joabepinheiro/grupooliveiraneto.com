@@ -227,7 +227,7 @@ class PainelDeTarefas extends Page implements HasForms
                         ->debounce(500)
                         ->numeric()
                         ->columnSpan([
-                            'lg' => 3,
+                            'lg' => 1,
                         ]),
 
                     TextInput::make('search_title')
@@ -237,17 +237,17 @@ class PainelDeTarefas extends Page implements HasForms
                         ->placeholder('Ex: Reunião')
                         ->debounce(500)
                         ->columnSpan([
-                            'lg' => 5,
+                            'lg' => 2,
                         ]),
 
                     Select::make('filter_responsavel')
                         ->label('Responsável')
-                        ->placeholder('Todos os responsável')
+                        ->placeholder('Todos os responsáveis')
                         ->hiddenLabel(false)
                         ->options(fn (): array => $this->getUserOptions())
                         ->searchable()
                         ->columnSpan([
-                            'lg' => 4,
+                            'lg' => 3,
                         ]),
 
                     Select::make('filter_departamentos')
@@ -256,7 +256,7 @@ class PainelDeTarefas extends Page implements HasForms
                         ->hiddenLabel(false)
                         ->options(OcorrenciaDepartamentos::values())
                         ->columnSpan([
-                            'lg' => 3,
+                            'lg' => 2,
                         ]),
 
                     FusedGroup::make([
@@ -270,7 +270,7 @@ class PainelDeTarefas extends Page implements HasForms
                         ->hiddenLabel(false)
                         ->columns(2)
                         ->columnSpan([
-                            'lg' => 9,
+                            'lg' => 4,
                         ]),
                 ])
                 ->columnSpanFull()
