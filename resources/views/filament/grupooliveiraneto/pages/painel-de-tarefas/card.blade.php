@@ -32,8 +32,6 @@
         hover:shadow-md
     "
 >
-
-
     {{-- Título --}}
     <h4 class="text-base font-semibold text-gray-800 py-0 mb-1">
         {{ $ocorrencia->titulo }}
