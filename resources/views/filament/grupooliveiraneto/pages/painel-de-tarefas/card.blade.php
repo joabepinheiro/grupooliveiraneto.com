@@ -52,9 +52,6 @@
     @endif
 
 
-
-
-
     {{-- Início --}}
     <div class="
         inline-flex items-center px-2 py-1 mb-1 text-sm font-semibold rounded-md

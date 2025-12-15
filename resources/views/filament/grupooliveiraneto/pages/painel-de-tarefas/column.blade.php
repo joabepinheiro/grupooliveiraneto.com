@@ -21,7 +21,7 @@
 
     {{-- Conteúdo --}}
     <div
-        class="space-y-1 grid grid-cols-1 md:grid-cols-1 gap-2"
+        class="space-y-1 grid grid-cols-1 md:grid-cols-2 gap-2"
         data-task-dropzone="1"
         data-status="{{ $status }}"
     >
