@@ -31,7 +31,7 @@
         @include('filament.grupooliveiraneto.pages.painel-de-tarefas.filters')
 
         {{-- Board --}}
-        <div class="grid grid-cols-1 md:grid-cols-1 gap-6" data-task-board="1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-task-board="1">
 
             {{-- Coluna Pendente --}}
             @include('filament.grupooliveiraneto.pages.painel-de-tarefas.column', [
